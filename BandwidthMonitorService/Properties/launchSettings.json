@@ -22,12 +22,12 @@
       "launchBrowser": true,
       "launchUrl": "swagger",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development",
+        "BWM_SecondsDelayBeforeFirstSample": "10",
         "BWM_DownloadBufferSize": "1048576",
-        "BWM_MinutesBetweenSamples": "5",
-        "BWM_SecondsDelayBeforeFirstSample": "10"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "BWM_MinutesBetweenSamples": "5"
       },
-      "applicationUrl": "http://localhost:5000"
+      "applicationUrl": "http://0.0.0.0:5000"
     }
   }
 }
