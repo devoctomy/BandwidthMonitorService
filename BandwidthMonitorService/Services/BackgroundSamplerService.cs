@@ -24,7 +24,7 @@ namespace BandwidthMonitorService.Services
 
         private CancellationTokenSource _cancellationTokenSource;
         private CancellationToken _cancellationToken;
-        private readonly ManualResetEvent _stopped;
+        private ManualResetEvent _stopped;
         private readonly IAppSettings _appSettings;
         private readonly List<string> _downloadUrls;
         private readonly IFileDownloaderService _fileDownloaderService;
@@ -169,7 +169,7 @@ namespace BandwidthMonitorService.Services
                     var stopWatch = new Stopwatch();
                     stopWatch.Restart();
                     var delay = new TimeSpan(0, _appSettings.MinutesBetweenSamples, 0);
-                    while (stopWatch.Elapsed < delay)
+                    while (!_cancellationToken.IsCancellationRequested && stopWatch.Elapsed < delay)
                     {
                         Console.WriteLine($"Waiting for {delay}, currently at {stopWatch.Elapsed}");
                         await Task.Delay(new TimeSpan(0, 0, 5));
@@ -180,11 +180,19 @@ namespace BandwidthMonitorService.Services
             _stopped.Set();
             Console.WriteLine("Stopped BackgroundSamplerService");
             Stopped?.Invoke(this, EventArgs.Empty);
+
+            Cleanup();
         }
 
         public List<Dto.Response.Sample> GetSamples()
         {
             return _latestSamples.Values.ToList();
+        }
+
+        private void Cleanup()
+        {
+            _stopped.Dispose();
+            _stopped = null;
         }
     }
 }

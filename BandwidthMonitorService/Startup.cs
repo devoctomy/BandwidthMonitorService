@@ -11,6 +11,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using System.Net.NetworkInformation;
 using System.Reflection;
+using System.Threading;
 
 namespace BandwidthMonitorService
 {
@@ -22,6 +23,7 @@ namespace BandwidthMonitorService
         }
 
         public IConfiguration Configuration { get; }
+        private BackgroundSamplerService BackgroundSamplerService;
 
         public void ConfigureServices(IServiceCollection services)
         {
@@ -44,10 +46,16 @@ namespace BandwidthMonitorService
             services.AddSingleton<BackgroundSamplerService>();
             services.AddSingleton<Ping>();
             services.AddSingleton<IHostedService>(p => p.GetService<BackgroundSamplerService>());
-            services.AddSingleton<IBackgroundSamplerService>(p => p.GetService<BackgroundSamplerService>());
+            services.AddSingleton<IBackgroundSamplerService>((p) =>
+            {
+                BackgroundSamplerService = p.GetService<BackgroundSamplerService>();
+                return BackgroundSamplerService;
+            });
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(
+            IApplicationBuilder app,
+            IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
