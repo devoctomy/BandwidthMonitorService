@@ -3,7 +3,6 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 namespace BandwidthMonitorService.Controllers
