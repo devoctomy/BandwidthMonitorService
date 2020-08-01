@@ -24,7 +24,8 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "BWM_DownloadBufferSize": "1048576",
-        "BWM_MinutesBetweenSamples": "5"
+        "BWM_MinutesBetweenSamples": "5",
+        "BWM_SecondsDelayBeforeFirstSample": "10"
       },
       "applicationUrl": "http://localhost:5000"
     }

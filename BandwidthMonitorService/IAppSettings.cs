@@ -8,5 +8,6 @@
         string DownloadUrlIreland { get; set; }
         string DownloadUrlLondon { get; set; }
         string DownloadUrlParis { get; set; }
+        int SecondsDelayBeforeFirstSample { get; set; }
     }
 }

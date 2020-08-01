@@ -6,6 +6,7 @@ using MongoDB.Driver;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net.NetworkInformation;
 using System.Threading;
@@ -80,9 +81,9 @@ namespace BandwidthMonitorService.Services
 
             while (!_cancellationToken.IsCancellationRequested)
             {
-                await Task.Yield();
+                Console.WriteLine("Started BackgroundSamplerService");
+                await Task.Delay(new TimeSpan(0, 0, _appSettings.SecondsDelayBeforeFirstSample));
                 _stopped.Reset();
-                Console.WriteLine("Running!");
 
                 if(_downloadUrls.Count > 0)
                 {
@@ -109,11 +110,11 @@ namespace BandwidthMonitorService.Services
 
                             if (_cancellationToken.IsCancellationRequested)
                             {
-                                Console.WriteLine($"Download cancelled.");
+                                Console.WriteLine($"Download cancelled");
                             }
                             else
                             {
-                                Console.WriteLine($"File at url '{curDownloadUrl}' took {result.Elapsed} to download. Totalling {result.TotalRead} bytes in {result.TotalReads} reads.");
+                                Console.WriteLine($"File at url '{curDownloadUrl}' took {result.Elapsed} to download. Totalling {result.TotalRead} bytes in {result.TotalReads} reads");
 
                                 var sample = new Sample()
                                 {
@@ -126,11 +127,13 @@ namespace BandwidthMonitorService.Services
                                 };
                                 _samplesService.Create(sample);
 
+                                Console.WriteLine("Storing sample");
                                 var sampleDto = _mapper.Map<Dto.Response.Sample>(sample);
                                 _latestSamples.AddOrUpdate(
                                     curDownloadUrl,
                                     sampleDto,
                                     (key, oldValue) => sampleDto);
+                                Console.WriteLine("Sample stored");
                             }
                         }
                         else
@@ -142,18 +145,26 @@ namespace BandwidthMonitorService.Services
                 }
                 else
                 {
-                    Console.WriteLine($"No download Urls configured.");
+                    Console.WriteLine($"No download Urls configured");
                     Error?.Invoke(this, EventArgs.Empty);
                     _cancellationTokenSource.Cancel();
                 }
 
                 if (!_cancellationToken.IsCancellationRequested)
                 {
-                    await Task.Delay(new TimeSpan(0, _appSettings.MinutesBetweenSamples, 0));
+                    var stopWatch = new Stopwatch();
+                    stopWatch.Restart();
+                    var delay = new TimeSpan(0, _appSettings.MinutesBetweenSamples, 0);
+                    while (stopWatch.Elapsed < delay)
+                    {
+                        Console.WriteLine($"Waiting for {delay} minutes, currently at {stopWatch.Elapsed}");
+                        await Task.Delay(new TimeSpan(0, 0, 5));
+                    }
+                    stopWatch.Stop();
                 }
             }
             _stopped.Set();
-            Console.WriteLine("Stopped!");
+            Console.WriteLine("Stopped BackgroundSamplerService");
         }
 
         public List<Dto.Response.Sample> GetSamples()
