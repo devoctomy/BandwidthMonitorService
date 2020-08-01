@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using BandwidthMonitorService.Domain.Models;
 using BandwidthMonitorService.DomainServices;
+using BandwidthMonitorService.Exceptions;
 using Microsoft.Extensions.Hosting;
 using MongoDB.Driver;
 using System;
@@ -17,7 +18,7 @@ namespace BandwidthMonitorService.Services
     public class BackgroundSamplerService : IHostedService
     {
         public event EventHandler<EventArgs> Started;
-        public event EventHandler<EventArgs> Error;
+        public event EventHandler<BackgroundSamplerServiceErrorEventArgs> Error;
 
         private CancellationTokenSource _cancellationTokenSource;
         private CancellationToken _cancellationToken;
@@ -29,7 +30,7 @@ namespace BandwidthMonitorService.Services
         private readonly ISamplesService _samplesService;
         private readonly IMapper _mapper;
         private readonly ITimestampService _timestampService;
-        private readonly Ping _ping;
+        private readonly IPingService _pingService;
 
         public static BackgroundSamplerService Instance { get; private set; }
 
@@ -38,7 +39,8 @@ namespace BandwidthMonitorService.Services
             IFileDownloaderService fileDownloaderService,
             ISamplesService samplesService,
             IMapper mapper,
-            ITimestampService timestampService)
+            ITimestampService timestampService,
+            IPingService pingService)
         {
             _appSettings = appSettings;
             _downloadUrls = new List<string>()
@@ -56,7 +58,7 @@ namespace BandwidthMonitorService.Services
             _timestampService = timestampService;
             _cancellationTokenSource = new CancellationTokenSource();
             _cancellationToken = _cancellationTokenSource.Token;
-            _ping = new Ping();
+            _pingService = pingService;
 
             Instance = this;
         }
@@ -97,7 +99,7 @@ namespace BandwidthMonitorService.Services
                         var url = new Uri(curDownloadUrl);
 
                         Console.WriteLine($"Pinging host '{url.Host}'");
-                        var pingResult = await _ping.SendPingAsync(url.Host);
+                        var pingResult = await _pingService.SendPingAsync(url.Host);
                         if(pingResult.Status == IPStatus.Success)
                         {
                             Console.WriteLine($"Time download from '{curDownloadUrl}'");
@@ -123,7 +125,7 @@ namespace BandwidthMonitorService.Services
                                     BytesRead = result.TotalRead,
                                     TotalReads = result.TotalReads,
                                     Elapsed = result.Elapsed,
-                                    RoundTripTime = pingResult.RoundtripTime
+                                    RoundTripTime = pingResult.RoundTripTime
                                 };
                                 _samplesService.Create(sample);
 
@@ -139,14 +141,20 @@ namespace BandwidthMonitorService.Services
                         else
                         {
                             Console.WriteLine($"Failed to ping host '{url.Host}'");
-                            Error?.Invoke(this, EventArgs.Empty);
+                            Error?.Invoke(this, new BackgroundSamplerServiceErrorEventArgs()
+                            {
+                                Exception = new HostPingFailedException(url.Host, pingResult.Status)
+                            });
                         }
                     }
                 }
                 else
                 {
                     Console.WriteLine($"No download Urls configured");
-                    Error?.Invoke(this, EventArgs.Empty);
+                    Error?.Invoke(this, new BackgroundSamplerServiceErrorEventArgs()
+                    {
+                        Exception = new NoDownloadUrlsConfiguredException()
+                    });
                     _cancellationTokenSource.Cancel();
                 }
 
@@ -157,7 +165,7 @@ namespace BandwidthMonitorService.Services
                     var delay = new TimeSpan(0, _appSettings.MinutesBetweenSamples, 0);
                     while (stopWatch.Elapsed < delay)
                     {
-                        Console.WriteLine($"Waiting for {delay} minutes, currently at {stopWatch.Elapsed}");
+                        Console.WriteLine($"Waiting for {delay}, currently at {stopWatch.Elapsed}");
                         await Task.Delay(new TimeSpan(0, 0, 5));
                     }
                     stopWatch.Stop();

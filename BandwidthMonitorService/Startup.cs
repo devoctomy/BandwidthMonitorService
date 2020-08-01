@@ -37,6 +37,7 @@ namespace BandwidthMonitorService
             services.AddTransient<IFileDownloaderService, FileDownloaderService>();
             services.AddTransient<ITimestampService, TimestampService>();
             services.AddTransient<ISamplesService, SamplesService>();
+            services.AddTransient<IPingService, PingService>();
             services.AddHostedService<BackgroundSamplerService>();
         }
 
