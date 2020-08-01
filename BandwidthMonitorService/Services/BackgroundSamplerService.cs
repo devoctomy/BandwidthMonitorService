@@ -18,7 +18,9 @@ namespace BandwidthMonitorService.Services
     public class BackgroundSamplerService : IHostedService
     {
         public event EventHandler<EventArgs> Started;
+        public event EventHandler<EventArgs> Stopped;
         public event EventHandler<BackgroundSamplerServiceErrorEventArgs> Error;
+        public event EventHandler<EventArgs> DownloadSampled;
 
         private CancellationTokenSource _cancellationTokenSource;
         private CancellationToken _cancellationToken;
@@ -133,6 +135,8 @@ namespace BandwidthMonitorService.Services
                                         sampleDto,
                                         (key, oldValue) => sampleDto);
                                     Console.WriteLine("Sample stored");
+
+                                    DownloadSampled?.Invoke(this, EventArgs.Empty);
                                 }
                                 else
                                 {
@@ -179,6 +183,7 @@ namespace BandwidthMonitorService.Services
             }
             _stopped.Set();
             Console.WriteLine("Stopped BackgroundSamplerService");
+            Stopped?.Invoke(this, EventArgs.Empty);
         }
 
         public List<Dto.Response.Sample> GetSamples()

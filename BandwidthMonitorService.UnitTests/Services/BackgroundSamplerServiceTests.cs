@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using BandwidthMonitorService.Domain.Models;
 using BandwidthMonitorService.DomainServices;
 using BandwidthMonitorService.Exceptions;
 using BandwidthMonitorService.Services;
@@ -68,17 +69,22 @@ namespace BandwidthMonitorService.UnitTests.Services
                 mockTimestampService.Object,
                 mockPingService.Object);
 
-            var errorEvent = new ManualResetEvent(false);
             var error = false;
             sut.Error += delegate (object sender, BackgroundSamplerServiceErrorEventArgs args)
             {
                 error = args.Exception is NoDownloadUrlsConfiguredException;
-                errorEvent.Set();
+                var stopTask = sut.StopAsync(CancellationToken.None);
+            };
+
+            var stopped = new ManualResetEvent(false);
+            sut.Stopped += delegate (object sender, EventArgs args)
+            {
+                stopped.Set();
             };
 
             // Act
             await sut.StartAsync(CancellationToken.None);
-            errorEvent.WaitOne();
+            stopped.WaitOne();
 
             // Assert
             Assert.True(error);
@@ -114,17 +120,22 @@ namespace BandwidthMonitorService.UnitTests.Services
                 mockTimestampService.Object,
                 mockPingService.Object);
 
-            var errorEvent = new ManualResetEvent(false);
             var error = false;
             sut.Error += delegate (object sender, BackgroundSamplerServiceErrorEventArgs args)
             {
                 error = args.Exception is HostPingFailedException;
-                errorEvent.Set();
+                var stopTask = sut.StopAsync(CancellationToken.None);
+            };
+
+            var stopped = new ManualResetEvent(false);
+            sut.Stopped += delegate (object sender, EventArgs args)
+            {
+                stopped.Set();
             };
 
             // Act
             await sut.StartAsync(CancellationToken.None);
-            errorEvent.WaitOne();
+            stopped.WaitOne();
 
             // Assert
             Assert.True(error);
@@ -170,20 +181,130 @@ namespace BandwidthMonitorService.UnitTests.Services
                 mockTimestampService.Object,
                 mockPingService.Object);
 
-            var errorEvent = new ManualResetEvent(false);
             var error = false;
             sut.Error += delegate (object sender, BackgroundSamplerServiceErrorEventArgs args)
             {
                 error = args.Exception is DownloadFailedException;
-                errorEvent.Set();
+                var stopTask = sut.StopAsync(CancellationToken.None);
+            };
+
+            var stopped = new ManualResetEvent(false);
+            sut.Stopped += delegate (object sender, EventArgs args)
+            {
+                stopped.Set();
             };
 
             // Act
             await sut.StartAsync(CancellationToken.None);
-            errorEvent.WaitOne();
+            stopped.WaitOne();
 
             // Assert
             Assert.True(error);
+
+            mockPingService.Verify(x => x.SendPingAsync(
+                It.IsAny<string>()), Times.Once);
+
+            mockFileDownloaderService.Setup(x => x.DownloadAndDiscardAsync(
+                It.IsAny<string>(),
+                It.IsAny<int>(),
+                It.IsAny<CancellationToken>()))
+                .ReturnsAsync(downloadResult);
+        }
+
+        [Fact]
+        public async void GivenSingleDownloadUrlConfigured_AndPingAllowed_WhenStartAsync_ThenServiceStarted_AndPingSuccess_AndDownloadSuccess_AndSampleStored()
+        {
+            // Arrange
+            var mockAppSettings = new Mock<IAppSettings>();
+            var mockFileDownloaderService = new Mock<IFileDownloaderService>();
+            var mockSamplesService = new Mock<ISamplesService>();
+            var mockMapper = new Mock<IMapper>();
+            var mockTimestampService = new Mock<ITimestampService>();
+            var mockPingService = new Mock<IPingService>();
+            var downloadUrl = "http://www.somesite.com/files/bigfile.bin";
+            var pingReply = new PingServiceReply()
+            {
+                Status = IPStatus.Success,
+                RoundTripTime = 24
+            };
+            var downloadResult = new DownloadResult()
+            {
+                HttpStatusCode = System.Net.HttpStatusCode.OK,
+                TotalRead = 100,
+                TotalReads = 10,
+                Elapsed = new TimeSpan(0, 0, 10)
+            };
+            var sample = new Sample()
+            {
+                Id = Guid.NewGuid().ToString(),
+                Url = downloadUrl,
+                BytesRead = downloadResult.TotalRead,
+                TotalReads = downloadResult.TotalReads,
+                Elapsed = downloadResult.Elapsed,
+                RoundTripTime = pingReply.RoundTripTime,
+                Timestamp = 242424
+            };
+            var sampleDto = new Dto.Response.Sample()
+            {
+                Id = Guid.NewGuid().ToString(),
+                Url = downloadUrl,
+                BytesRead = downloadResult.TotalRead,
+                TotalReads = downloadResult.TotalReads,
+                Elapsed = downloadResult.Elapsed,
+                RoundTripTime = pingReply.RoundTripTime,
+                Timestamp = 242424
+            };
+
+            mockAppSettings.SetupGet(x => x.DownloadUrlLondon)
+                .Returns(downloadUrl);
+
+            mockPingService.Setup(x => x.SendPingAsync(
+                It.IsAny<string>()))
+                .ReturnsAsync(pingReply);
+
+            mockFileDownloaderService.Setup(x => x.DownloadAndDiscardAsync(
+                It.IsAny<string>(),
+                It.IsAny<int>(),
+                It.IsAny<CancellationToken>()))
+                .ReturnsAsync(downloadResult);
+
+            mockSamplesService.Setup(x => x.Create(
+                It.IsAny<Sample>()))
+                .Returns(sample);
+
+            mockMapper.Setup(x => x.Map<Dto.Response.Sample>(
+                It.IsAny<object>()))
+                .Returns(sampleDto);
+
+            var sut = new BackgroundSamplerService(
+                mockAppSettings.Object,
+                mockFileDownloaderService.Object,
+                mockSamplesService.Object,
+                mockMapper.Object,
+                mockTimestampService.Object,
+                mockPingService.Object);
+
+            sut.DownloadSampled += delegate (object sender, EventArgs args)
+            {
+                var stopTask = sut.StopAsync(CancellationToken.None);
+            };
+
+            var stopped = new ManualResetEvent(false);
+            sut.Stopped += delegate (object sender, EventArgs args)
+            {
+                stopped.Set();
+            };
+
+            // Act
+            await sut.StartAsync(CancellationToken.None);
+            stopped.WaitOne();
+
+            // Assert
+            var samples = sut.GetSamples();
+            Assert.Single(samples);
+            Assert.Equal(downloadUrl, samples[0].Url);
+            mockSamplesService.Verify(x => x.Create(
+                It.IsAny<Sample>()), Times.Once);
         }
     }
 }
