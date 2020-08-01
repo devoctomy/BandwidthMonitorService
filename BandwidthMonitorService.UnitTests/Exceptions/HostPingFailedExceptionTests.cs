@@ -1,8 +1,5 @@
 ﻿using BandwidthMonitorService.Exceptions;
-using System;
-using System.Collections.Generic;
 using System.Net.NetworkInformation;
-using System.Text;
 using Xunit;
 
 namespace BandwidthMonitorService.UnitTests.Exceptions

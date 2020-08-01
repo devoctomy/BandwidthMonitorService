@@ -11,7 +11,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using System.Net.NetworkInformation;
 using System.Reflection;
-using System.Threading;
 
 namespace BandwidthMonitorService
 {

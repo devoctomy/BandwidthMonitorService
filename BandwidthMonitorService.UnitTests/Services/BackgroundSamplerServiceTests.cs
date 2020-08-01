@@ -7,7 +7,6 @@ using Moq;
 using System;
 using System.Net.NetworkInformation;
 using System.Threading;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace BandwidthMonitorService.UnitTests.Services
