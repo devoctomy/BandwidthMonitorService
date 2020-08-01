@@ -1,0 +1,54 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30114.105
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BandwidthMonitorService", "BandwidthMonitorService\BandwidthMonitorService.csproj", "{319B90CD-87CF-439A-BDF8-43412588EA66}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{0A172584-2506-4B84-85D2-201EADE52122}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BandwidthMonitorService.UnitTests", "BandwidthMonitorService.UnitTests\BandwidthMonitorService.UnitTests.csproj", "{5358C3AC-DC75-40BD-BE10-1FD12CE6DE15}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BandwidthMonitorService.Dto", "BandwidthMonitorService.Dto\BandwidthMonitorService.Dto.csproj", "{BE9F1127-49B7-47F2-9DFB-3CB6A574ACF2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BandwidthMonitorService.Domain", "BandwidthMonitorService.Domain\BandwidthMonitorService.Domain.csproj", "{E265004A-DD70-4F8C-A787-2AD607152226}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BandwidthMonitorService.DomainServices", "BandwidthMonitorService.DomainServices\BandwidthMonitorService.DomainServices.csproj", "{B35FE528-8296-48EB-A1B9-03126BB883DE}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{319B90CD-87CF-439A-BDF8-43412588EA66}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{319B90CD-87CF-439A-BDF8-43412588EA66}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{319B90CD-87CF-439A-BDF8-43412588EA66}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{319B90CD-87CF-439A-BDF8-43412588EA66}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5358C3AC-DC75-40BD-BE10-1FD12CE6DE15}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5358C3AC-DC75-40BD-BE10-1FD12CE6DE15}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5358C3AC-DC75-40BD-BE10-1FD12CE6DE15}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5358C3AC-DC75-40BD-BE10-1FD12CE6DE15}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BE9F1127-49B7-47F2-9DFB-3CB6A574ACF2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BE9F1127-49B7-47F2-9DFB-3CB6A574ACF2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BE9F1127-49B7-47F2-9DFB-3CB6A574ACF2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BE9F1127-49B7-47F2-9DFB-3CB6A574ACF2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E265004A-DD70-4F8C-A787-2AD607152226}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E265004A-DD70-4F8C-A787-2AD607152226}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E265004A-DD70-4F8C-A787-2AD607152226}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E265004A-DD70-4F8C-A787-2AD607152226}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B35FE528-8296-48EB-A1B9-03126BB883DE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B35FE528-8296-48EB-A1B9-03126BB883DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B35FE528-8296-48EB-A1B9-03126BB883DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B35FE528-8296-48EB-A1B9-03126BB883DE}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{5358C3AC-DC75-40BD-BE10-1FD12CE6DE15} = {0A172584-2506-4B84-85D2-201EADE52122}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {EFA7E551-3741-4CD7-9403-5FF803E2464C}
+	EndGlobalSection
+EndGlobal
