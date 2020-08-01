@@ -109,33 +109,39 @@ namespace BandwidthMonitorService.Services
                                 _appSettings.DownloadBufferSize,
                                 _cancellationToken);
 
-
-                            if (_cancellationToken.IsCancellationRequested)
+                            if (!_cancellationToken.IsCancellationRequested)
                             {
-                                Console.WriteLine($"Download cancelled");
-                            }
-                            else
-                            {
-                                Console.WriteLine($"File at url '{curDownloadUrl}' took {result.Elapsed} to download. Totalling {result.TotalRead} bytes in {result.TotalReads} reads");
-
-                                var sample = new Sample()
+                                if(result.HttpStatusCode == System.Net.HttpStatusCode.OK)
                                 {
-                                    Url = curDownloadUrl,
-                                    Timestamp = currentSampleTimestamp,
-                                    BytesRead = result.TotalRead,
-                                    TotalReads = result.TotalReads,
-                                    Elapsed = result.Elapsed,
-                                    RoundTripTime = pingResult.RoundTripTime
-                                };
-                                _samplesService.Create(sample);
+                                    Console.WriteLine($"File at url '{curDownloadUrl}' took {result.Elapsed} to download. Totalling {result.TotalRead} bytes in {result.TotalReads} reads");
 
-                                Console.WriteLine("Storing sample");
-                                var sampleDto = _mapper.Map<Dto.Response.Sample>(sample);
-                                _latestSamples.AddOrUpdate(
-                                    curDownloadUrl,
-                                    sampleDto,
-                                    (key, oldValue) => sampleDto);
-                                Console.WriteLine("Sample stored");
+                                    var sample = new Sample()
+                                    {
+                                        Url = curDownloadUrl,
+                                        Timestamp = currentSampleTimestamp,
+                                        BytesRead = result.TotalRead,
+                                        TotalReads = result.TotalReads,
+                                        Elapsed = result.Elapsed,
+                                        RoundTripTime = pingResult.RoundTripTime
+                                    };
+                                    _samplesService.Create(sample);
+
+                                    Console.WriteLine("Storing sample");
+                                    var sampleDto = _mapper.Map<Dto.Response.Sample>(sample);
+                                    _latestSamples.AddOrUpdate(
+                                        curDownloadUrl,
+                                        sampleDto,
+                                        (key, oldValue) => sampleDto);
+                                    Console.WriteLine("Sample stored");
+                                }
+                                else
+                                {
+                                    Console.WriteLine($"Download failed '{url}'");
+                                    Error?.Invoke(this, new BackgroundSamplerServiceErrorEventArgs()
+                                    {
+                                        Exception = new DownloadFailedException(curDownloadUrl)
+                                    });
+                                }
                             }
                         }
                         else

@@ -128,7 +128,62 @@ namespace BandwidthMonitorService.UnitTests.Services
 
             // Assert
             Assert.True(error);
+        }
 
+        [Fact]
+        public async void GivenSingleDownloadUrlConfigured_AndPingAllowed_AndDownloadNotFound_WhenStartAsync_ThenServiceStarted_AndPingSuccess_AndDownloadFailed_AndErrorRaised()
+        {
+            // Arrange
+            var mockAppSettings = new Mock<IAppSettings>();
+            var mockFileDownloaderService = new Mock<IFileDownloaderService>();
+            var mockSamplesService = new Mock<ISamplesService>();
+            var mockMapper = new Mock<IMapper>();
+            var mockTimestampService = new Mock<ITimestampService>();
+            var mockPingService = new Mock<IPingService>();
+            var pingReply = new PingServiceReply()
+            {
+                Status = IPStatus.Success
+            };
+            var downloadResult = new DownloadResult()
+            {
+                HttpStatusCode = System.Net.HttpStatusCode.InternalServerError
+            };
+
+            mockAppSettings.SetupGet(x => x.DownloadUrlLondon)
+                .Returns("http://www.somesite.com/files/bigfile.bin");
+
+            mockPingService.Setup(x => x.SendPingAsync(
+                It.IsAny<string>()))
+                .ReturnsAsync(pingReply);
+
+            mockFileDownloaderService.Setup(x => x.DownloadAndDiscardAsync(
+                It.IsAny<string>(),
+                It.IsAny<int>(),
+                It.IsAny<CancellationToken>()))
+                .ReturnsAsync(downloadResult);
+
+            var sut = new BackgroundSamplerService(
+                mockAppSettings.Object,
+                mockFileDownloaderService.Object,
+                mockSamplesService.Object,
+                mockMapper.Object,
+                mockTimestampService.Object,
+                mockPingService.Object);
+
+            var errorEvent = new ManualResetEvent(false);
+            var error = false;
+            sut.Error += delegate (object sender, BackgroundSamplerServiceErrorEventArgs args)
+            {
+                error = args.Exception is DownloadFailedException;
+                errorEvent.Set();
+            };
+
+            // Act
+            await sut.StartAsync(CancellationToken.None);
+            errorEvent.WaitOne();
+
+            // Assert
+            Assert.True(error);
         }
     }
 }
