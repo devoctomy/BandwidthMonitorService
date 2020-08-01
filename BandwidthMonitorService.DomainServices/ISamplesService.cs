@@ -1,5 +1,7 @@
 ﻿using BandwidthMonitorService.Domain.Models;
+using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 
 namespace BandwidthMonitorService.DomainServices
 {
@@ -8,6 +10,8 @@ namespace BandwidthMonitorService.DomainServices
         List<Sample> Get();
 
         Sample Get(string id);
+
+        IEnumerable<Sample> Find(Expression<Func<Sample, bool>> filter);
 
         Sample Create(Sample sample);
 

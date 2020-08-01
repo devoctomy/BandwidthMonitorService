@@ -1,7 +1,9 @@
 ﻿using BandwidthMonitorService.Domain.Models;
 using BandwidthMonitorService.Domain.Settings;
 using MongoDB.Driver;
+using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 
 namespace BandwidthMonitorService.DomainServices
 {
@@ -21,6 +23,9 @@ namespace BandwidthMonitorService.DomainServices
 
         public Sample Get(string id) =>
             _samples.Find(book => book.Id == id).FirstOrDefault();
+
+        public IEnumerable<Sample> Find(Expression<Func<Sample, bool>> filter) =>
+            _samples.Find(filter).ToEnumerable();
 
         public Sample Create(Sample sample)
         {
