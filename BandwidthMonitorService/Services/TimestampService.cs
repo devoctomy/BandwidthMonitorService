@@ -8,7 +8,7 @@ namespace BandwidthMonitorService.Services
         {
             if(dateTime.Kind == DateTimeKind.Unspecified)
             {
-                throw new ArgumentException("Kind of dateTime cannot be 'Unspecified'.");
+                throw new ArgumentException("Kind of dateTime cannot be 'Unspecified'.", nameof(dateTime));
             }
 
             return (int)Math.Truncate((dateTime.ToUniversalTime().Subtract(new DateTime(1970, 1, 1))).TotalSeconds);

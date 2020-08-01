@@ -2,12 +2,14 @@ using AutoMapper;
 using BandwidthMonitorService.Domain.Settings;
 using BandwidthMonitorService.DomainServices;
 using BandwidthMonitorService.Services;
+using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
+using System.Net.NetworkInformation;
 using System.Reflection;
 
 namespace BandwidthMonitorService
@@ -32,13 +34,17 @@ namespace BandwidthMonitorService
                 Configuration.Bind(appSettings);
                 return appSettings;
             });
+            services.AddMediatR(Assembly.GetExecutingAssembly());
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
             ConfigureMongoDb(services);
             services.AddTransient<IFileDownloaderService, FileDownloaderService>();
             services.AddTransient<ITimestampService, TimestampService>();
             services.AddTransient<ISamplesService, SamplesService>();
             services.AddTransient<IPingService, PingService>();
-            services.AddHostedService<BackgroundSamplerService>();
+            services.AddSingleton<BackgroundSamplerService>();
+            services.AddSingleton<Ping>();
+            services.AddSingleton<IHostedService>(p => p.GetService<BackgroundSamplerService>());
+            services.AddSingleton<IBackgroundSamplerService>(p => p.GetService<BackgroundSamplerService>());
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

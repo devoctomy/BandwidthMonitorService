@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 
 namespace BandwidthMonitorService.Services
 {
-    public class BackgroundSamplerService : IHostedService
+    public class BackgroundSamplerService : IHostedService, IBackgroundSamplerService
     {
         public event EventHandler<EventArgs> Started;
         public event EventHandler<EventArgs> Stopped;
@@ -33,8 +33,6 @@ namespace BandwidthMonitorService.Services
         private readonly IMapper _mapper;
         private readonly ITimestampService _timestampService;
         private readonly IPingService _pingService;
-
-        public static BackgroundSamplerService Instance { get; private set; }
 
         public BackgroundSamplerService(
             IAppSettings appSettings,
@@ -61,8 +59,6 @@ namespace BandwidthMonitorService.Services
             _cancellationTokenSource = new CancellationTokenSource();
             _cancellationToken = _cancellationTokenSource.Token;
             _pingService = pingService;
-
-            Instance = this;
         }
 
         public async Task StartAsync(CancellationToken cancellationToken)

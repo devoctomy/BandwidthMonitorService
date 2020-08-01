@@ -7,6 +7,20 @@ namespace BandwidthMonitorService.UnitTests.Services
     public class TimestampServiceTests
     {
         [Fact]
+        public void GivenDateTimeWithUnspecifiedKind_WhenToUnixTimestamp_ThnArgumentExceptionThrown()
+        {
+            // Arrange
+            var value = new DateTime(2020, 01, 01, 10, 30, 25, DateTimeKind.Unspecified);
+            var sut = new TimestampService();
+
+            // Act / Assert
+            Assert.Throws<ArgumentException>(() =>
+            {
+                sut.ToUnixTimestamp(value);
+            });
+        }
+
+        [Fact]
         public void GivenDateTime_WhenToUnixTimestamp_TheCorrectTimestampReturned()
         {
             // Arrange

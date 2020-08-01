@@ -7,9 +7,9 @@ namespace BandwidthMonitorService.Services
     {
         private Ping _ping;
 
-        public PingService()
+        public PingService(Ping ping)
         {
-            _ping = new Ping();
+            _ping = ping;
         }
 
         public async Task<PingServiceReply> SendPingAsync(string host)

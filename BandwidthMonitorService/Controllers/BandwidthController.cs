@@ -1,6 +1,8 @@
-﻿using BandwidthMonitorService.Services;
+﻿using BandwidthMonitorService.Messages;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using System.Threading.Tasks;
 
 namespace BandwidthMonitorService.Controllers
 {
@@ -9,17 +11,22 @@ namespace BandwidthMonitorService.Controllers
     public class BandwidthController : ControllerBase
     {
         private readonly ILogger<BandwidthController> _logger;
+        private readonly IMediator _mediator;
 
-        public BandwidthController(ILogger<BandwidthController> logger)
+        public BandwidthController(
+            ILogger<BandwidthController> logger,
+            IMediator mediator)
         {
             _logger = logger;
+            _mediator = mediator;
         }
 
         [HttpGet("LatestRawSamples")]
-        public ActionResult GetLatestRawSamples()
+        public async Task<ActionResult> GetLatestRawSamples()
         {
-            var samples = BackgroundSamplerService.Instance.GetSamples();
-            return Ok(samples);
+            var request = new GetBackgroundSamplerServiceSamplesQuery();
+            var result = await _mediator.Send(request);
+            return Ok(result.Samples);
         }
     }
 }
