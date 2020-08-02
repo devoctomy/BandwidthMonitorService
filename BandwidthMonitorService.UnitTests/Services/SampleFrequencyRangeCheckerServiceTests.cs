@@ -48,7 +48,7 @@ namespace BandwidthMonitorService.UnitTests.Services
             var testSamples = timeStamps.Select(x => new Sample()
             {
                 Timestamp = timeStampService.ToUnixTimestamp(x)
-            });
+            }).ToList();
 
             // Act
             var range = sut.GetRange(testSamples, Dto.Enums.Frequency.HourOfDay);
@@ -103,7 +103,7 @@ namespace BandwidthMonitorService.UnitTests.Services
             var testSamples = timeStamps.Select(x => new Sample()
             {
                 Timestamp = timeStampService.ToUnixTimestamp(x)
-            });
+            }).ToList();
 
             // Act
             var range = sut.GetRange(testSamples, Dto.Enums.Frequency.DayOfMonth);
@@ -136,7 +136,7 @@ namespace BandwidthMonitorService.UnitTests.Services
             var testSamples = timeStamps.Select(x => new Sample()
             {
                 Timestamp = timeStampService.ToUnixTimestamp(x)
-            });
+            }).ToList();
 
             // Act
             var range = sut.GetRange(testSamples, Dto.Enums.Frequency.WeekOfYear);
@@ -172,7 +172,7 @@ namespace BandwidthMonitorService.UnitTests.Services
             var testSamples = timeStamps.Select(x => new Sample()
             {
                 Timestamp = timeStampService.ToUnixTimestamp(x)
-            });
+            }).ToList();
 
             // Act
             var range = sut.GetRange(testSamples, Dto.Enums.Frequency.MonthOfYear);
@@ -205,7 +205,7 @@ namespace BandwidthMonitorService.UnitTests.Services
             var testSamples = timeStamps.Select(x => new Sample()
             {
                 Timestamp = timeStampService.ToUnixTimestamp(x)
-            });
+            }).ToList();
 
             // Act
             var range = sut.GetRange(testSamples, Dto.Enums.Frequency.Year);

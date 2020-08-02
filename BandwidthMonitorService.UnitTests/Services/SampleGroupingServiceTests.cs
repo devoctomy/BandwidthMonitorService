@@ -74,7 +74,7 @@ namespace BandwidthMonitorService.UnitTests.Services
             };
 
             mockFrequencyRangeChecker.Setup(x => x.GetRange(
-                It.IsAny<IEnumerable<Sample>>(),
+                It.IsAny<List<Sample>>(),
                 It.IsAny<Frequency>()))
                 .Returns(new FrequencyRange()
                 {
@@ -109,7 +109,7 @@ namespace BandwidthMonitorService.UnitTests.Services
             };
 
             mockFrequencyRangeChecker.Setup(x => x.GetRange(
-                It.IsAny<IEnumerable<Sample>>(),
+                It.IsAny<List<Sample>>(),
                 It.IsAny<Frequency>()))
                 .Returns(new FrequencyRange()
                 {

@@ -7,7 +7,7 @@ namespace BandwidthMonitorService.Services
     public interface ISampleFrequencyRangeCheckerService
     {
         FrequencyRange GetRange(
-            IEnumerable<Sample> orderedSamples,
+            List<Sample> orderedSamples,
             Frequency frequency);
     }
 }

@@ -8,7 +8,7 @@ namespace BandwidthMonitorService.Services
     public interface ISampleSummingService
     {
         public List<Sample> Sum(
-            IEnumerable<IGrouping<int ,Sample>> groupedSamples,
+            List<IGrouping<int ,Sample>> groupedSamples,
             SummingMode summingMode);
     }
 }

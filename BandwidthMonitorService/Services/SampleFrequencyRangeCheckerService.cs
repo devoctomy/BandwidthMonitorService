@@ -18,7 +18,7 @@ namespace BandwidthMonitorService.Services
         }
 
         public FrequencyRange GetRange(
-            IEnumerable<Sample> orderedSamples,
+            List<Sample> orderedSamples,
             Frequency frequency)
         {
             var min = orderedSamples.First().Timestamp;

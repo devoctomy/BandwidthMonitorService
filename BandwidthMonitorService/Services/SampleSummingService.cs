@@ -9,7 +9,7 @@ namespace BandwidthMonitorService.Services
     public class SampleSummingService : ISampleSummingService
     {
         public List<Sample> Sum(
-            IEnumerable<IGrouping<int, Sample>> groupedSamples,
+            List<IGrouping<int, Sample>> groupedSamples,
             SummingMode summingMode)
         {
             if(summingMode != SummingMode.Average)
