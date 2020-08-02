@@ -10,19 +10,16 @@ namespace BandwidthMonitorService.Services
     {
         private readonly ISampleFrequencyRangeCheckerService _sampleFrequencyRangeCheckerService;
         private readonly ITimestampService _timestampService;
-        private readonly ISampleSummingService _sampleSummingService;
 
         public SampleGroupingService(
             ISampleFrequencyRangeCheckerService sampleFrequencyRangeCheckerService,
-            ITimestampService timestampService,
-            ISampleSummingService sampleSummingService)
+            ITimestampService timestampService)
         {
             _sampleFrequencyRangeCheckerService = sampleFrequencyRangeCheckerService;
             _timestampService = timestampService;
-            _sampleSummingService = sampleSummingService;
         }
 
-        public List<Sample> Group(
+        public List<IGrouping<int, Sample>> Group(
             List<Sample> orderedSamples,
             Frequency frequency)
         {
@@ -45,11 +42,7 @@ namespace BandwidthMonitorService.Services
                     }
             }
 
-            var summed = _sampleSummingService.Sum(
-                grouped,
-                SummingMode.Average);
-
-            return summed;
+            return grouped.ToList();
         }
     }
 }
