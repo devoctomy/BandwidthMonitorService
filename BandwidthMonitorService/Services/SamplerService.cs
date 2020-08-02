@@ -84,6 +84,8 @@ namespace BandwidthMonitorService.Services
                         };
                     }
                 }
+
+                return null;
             }
             else
             {
@@ -93,8 +95,6 @@ namespace BandwidthMonitorService.Services
                     Exception = new HostPingFailedException(url.Host, pingResult.Status)
                 };
             }
-
-            return null;
         }
     }
 }
