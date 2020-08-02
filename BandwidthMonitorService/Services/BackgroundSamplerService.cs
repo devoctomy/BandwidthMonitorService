@@ -19,28 +19,21 @@ namespace BandwidthMonitorService.Services
     {
         public event EventHandler<EventArgs> Started;
         public event EventHandler<EventArgs> Stopped;
-        public event EventHandler<BackgroundSamplerServiceErrorEventArgs> Error;
-        public event EventHandler<EventArgs> DownloadSampled;
 
         private CancellationTokenSource _cancellationTokenSource;
         private CancellationToken _cancellationToken;
         private ManualResetEvent _stopped;
         private readonly IAppSettings _appSettings;
+        private readonly ISamplerService _samplerService;
+        private readonly IAsyncDelayService _asyncDelayService;
         private readonly List<string> _downloadUrls;
-        private readonly IFileDownloaderService _fileDownloaderService;
         private readonly ConcurrentDictionary<string, Dto.Response.Sample> _latestSamples = new ConcurrentDictionary<string, Dto.Response.Sample>();
-        private readonly ISamplesService _samplesService;
-        private readonly IMapper _mapper;
-        private readonly ITimestampService _timestampService;
-        private readonly IPingService _pingService;
+
 
         public BackgroundSamplerService(
             IAppSettings appSettings,
-            IFileDownloaderService fileDownloaderService,
-            ISamplesService samplesService,
-            IMapper mapper,
-            ITimestampService timestampService,
-            IPingService pingService)
+            ISamplerService samplerService,
+            IAsyncDelayService asyncDelayService)
         {
             _appSettings = appSettings;
             _downloadUrls = new List<string>()
@@ -51,14 +44,11 @@ namespace BandwidthMonitorService.Services
                 _appSettings.DownloadUrlParis
             };
             _downloadUrls = _downloadUrls.Where(x => !string.IsNullOrEmpty(x)).ToList();
-            _fileDownloaderService = fileDownloaderService;
             _stopped = new ManualResetEvent(true);
-            _samplesService = samplesService;
-            _mapper = mapper;
-            _timestampService = timestampService;
             _cancellationTokenSource = new CancellationTokenSource();
             _cancellationToken = _cancellationTokenSource.Token;
-            _pingService = pingService;
+            _samplerService = samplerService;
+            _asyncDelayService = asyncDelayService;
         }
 
         public async Task StartAsync(CancellationToken cancellationToken)
@@ -81,121 +71,57 @@ namespace BandwidthMonitorService.Services
 
             while (!_cancellationToken.IsCancellationRequested)
             {
-                Console.WriteLine("Started BackgroundSamplerService");
-                await Task.Delay(new TimeSpan(0, 0, _appSettings.SecondsDelayBeforeFirstSample));
-                _stopped.Reset();
+                await Sample();
 
-                if(_downloadUrls.Count > 0)
+                await _asyncDelayService.Delay(
+                    new TimeSpan(0, _appSettings.MinutesBetweenSamples, 0),
+                    new TimeSpan(0, 0, 5),
+                    null,
+                    _cancellationToken);
+            }
+
+            _stopped.Set();
+            Stopped?.Invoke(this, EventArgs.Empty);
+        }
+
+        public async Task Sample()
+        {
+            foreach (var curUrl in _downloadUrls)
+            {
+                if (_cancellationToken.IsCancellationRequested)
                 {
-                    var latestSamples = new Dictionary<string, Sample>();
-                    var currentSampleTime = DateTime.Now;
-                    var currentSampleTimestamp = _timestampService.ToUnixTimestamp(currentSampleTime);
-                    Console.WriteLine($"Taking sample at timestamp {currentSampleTimestamp}");
+                    break;
+                }
 
-                    foreach (var curDownloadUrl in _downloadUrls)
+                Console.WriteLine($"Sampling from '{curUrl}'");
+                var result = await _samplerService.Sample(
+                    curUrl,
+                    _cancellationToken);
+                if (result != null)
+                {
+                    if (result.IsSuccess)
                     {
-                        var url = new Uri(curDownloadUrl);
-
-                        Console.WriteLine($"Pinging host '{url.Host}'");
-                        var pingResult = await _pingService.SendPingAsync(url.Host);
-                        if(pingResult.Status == IPStatus.Success)
-                        {
-                            Console.WriteLine($"Time download from '{curDownloadUrl}'");
-
-                            var result = await _fileDownloaderService.DownloadAndDiscardAsync(
-                                curDownloadUrl,
-                                _appSettings.DownloadBufferSize,
-                                _cancellationToken);
-
-                            if (!_cancellationToken.IsCancellationRequested)
-                            {
-                                if(result.HttpStatusCode == System.Net.HttpStatusCode.OK)
-                                {
-                                    Console.WriteLine($"File at url '{curDownloadUrl}' took {result.Elapsed} to download. Totalling {result.TotalRead} bytes in {result.TotalReads} reads");
-
-                                    var sample = new Sample()
-                                    {
-                                        Url = curDownloadUrl,
-                                        Timestamp = currentSampleTimestamp,
-                                        BytesRead = result.TotalRead,
-                                        TotalReads = result.TotalReads,
-                                        Elapsed = result.Elapsed,
-                                        RoundTripTime = pingResult.RoundTripTime
-                                    };
-                                    _samplesService.Create(sample);
-
-                                    var sampleDto = _mapper.Map<Dto.Response.Sample>(sample);
-                                    if (_appSettings.SaveSamples)
-                                    {
-                                        Console.WriteLine("Storing sample");
-                                        _latestSamples.AddOrUpdate(
-                                            curDownloadUrl,
-                                            sampleDto,
-                                            (key, oldValue) => sampleDto);
-                                        Console.WriteLine("Sample stored");
-                                    }
-
-                                    DownloadSampled?.Invoke(this, EventArgs.Empty);
-                                }
-                                else
-                                {
-                                    Console.WriteLine($"Download failed '{url}'");
-                                    Error?.Invoke(this, new BackgroundSamplerServiceErrorEventArgs()
-                                    {
-                                        Exception = new DownloadFailedException(curDownloadUrl)
-                                    });
-                                }
-                            }
-                        }
-                        else
-                        {
-                            Console.WriteLine($"Failed to ping host '{url.Host}'");
-                            Error?.Invoke(this, new BackgroundSamplerServiceErrorEventArgs()
-                            {
-                                Exception = new HostPingFailedException(url.Host, pingResult.Status)
-                            });
-                        }
+                        Console.WriteLine($"Sample successful");
+                        _latestSamples.AddOrUpdate(
+                            curUrl,
+                            result.Sample,
+                            (key, oldValue) => result.Sample);
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Sample failed. {result.Exception.Message}");
                     }
                 }
                 else
                 {
-                    Console.WriteLine($"No download Urls configured");
-                    Error?.Invoke(this, new BackgroundSamplerServiceErrorEventArgs()
-                    {
-                        Exception = new NoDownloadUrlsConfiguredException()
-                    });
-                    _cancellationTokenSource.Cancel();
-                }
-
-                if (!_cancellationToken.IsCancellationRequested)
-                {
-                    var stopWatch = new Stopwatch();
-                    stopWatch.Restart();
-                    var delay = new TimeSpan(0, _appSettings.MinutesBetweenSamples, 0);
-                    while (!_cancellationToken.IsCancellationRequested && stopWatch.Elapsed < delay)
-                    {
-                        Console.WriteLine($"Waiting for {delay}, currently at {stopWatch.Elapsed}");
-                        await Task.Delay(new TimeSpan(0, 0, 5));
-                    }
-                    stopWatch.Stop();
+                    Console.WriteLine($"Sample failed");
                 }
             }
-            _stopped.Set();
-            Console.WriteLine("Stopped BackgroundSamplerService");
-            Stopped?.Invoke(this, EventArgs.Empty);
-
-            Cleanup();
         }
 
         public List<Dto.Response.Sample> GetSamples()
         {
             return _latestSamples.Values.ToList();
-        }
-
-        private void Cleanup()
-        {
-            _stopped.Dispose();
-            _stopped = null;
         }
     }
 }
