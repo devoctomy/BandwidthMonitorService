@@ -1,9 +1,7 @@
-﻿using BandwidthMonitorService.Dto.Request;
-using BandwidthMonitorService.Messages;
+﻿using BandwidthMonitorService.Messages;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using System;
 using System.Threading.Tasks;
 
 namespace BandwidthMonitorService.Controllers
@@ -31,10 +29,10 @@ namespace BandwidthMonitorService.Controllers
             return Ok(result.Samples);
         }
 
-        [HttpGet("SumSamples")]
-        public async Task<ActionResult> SumSamples(Dto.Request.SumSamplesQuery query)
+        [HttpPost("SumSamples")]
+        public async Task<ActionResult> SumSamples([FromBody] Dto.Request.SumSamplesQuery query)
         {
-            var request = new Messages.SumSamplesQuery()
+            var request = new SumSamplesQuery()
             {
                 From = query.From,
                 To = query.To
