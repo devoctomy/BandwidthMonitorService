@@ -124,13 +124,16 @@ namespace BandwidthMonitorService.Services
                                     };
                                     _samplesService.Create(sample);
 
-                                    Console.WriteLine("Storing sample");
                                     var sampleDto = _mapper.Map<Dto.Response.Sample>(sample);
-                                    _latestSamples.AddOrUpdate(
-                                        curDownloadUrl,
-                                        sampleDto,
-                                        (key, oldValue) => sampleDto);
-                                    Console.WriteLine("Sample stored");
+                                    if (_appSettings.SaveSamples)
+                                    {
+                                        Console.WriteLine("Storing sample");
+                                        _latestSamples.AddOrUpdate(
+                                            curDownloadUrl,
+                                            sampleDto,
+                                            (key, oldValue) => sampleDto);
+                                        Console.WriteLine("Sample stored");
+                                    }
 
                                     DownloadSampled?.Invoke(this, EventArgs.Empty);
                                 }
