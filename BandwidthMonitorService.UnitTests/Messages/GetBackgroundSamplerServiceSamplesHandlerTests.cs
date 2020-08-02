@@ -10,7 +10,7 @@ namespace BandwidthMonitorService.UnitTests.Messages
     public class GetBackgroundSamplerServiceSamplesHandlerTests
     {
         [Fact]
-        public async void GivenQuery_WhenHandled_Then()
+        public async void GivenQuery_WhenHandled_ThenGetSamples_AndSamplesReturned()
         {
             // Arrange
             var mockBackgroundSamplerService = new Mock<IBackgroundSamplerService>();
@@ -29,6 +29,7 @@ namespace BandwidthMonitorService.UnitTests.Messages
             var result = await sut.Handle(request, CancellationToken.None);
 
             // Assert
+            mockBackgroundSamplerService.Verify(x => x.GetSamples(), Times.Once);
             Assert.Single(result.Samples);
         }
     }

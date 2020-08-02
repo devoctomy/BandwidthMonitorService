@@ -22,25 +22,27 @@ namespace BandwidthMonitorService
         }
 
         public IConfiguration Configuration { get; }
+        public AppSettings AppSettings { get; private set; }
         private BackgroundSamplerService BackgroundSamplerService;
 
         public void ConfigureServices(IServiceCollection services)
         {
+            AppSettings = new AppSettings();
+            Configuration.Bind(AppSettings);
+
             services.AddHttpClient();
             services.AddControllers();
             services.AddSwaggerGen();
-            services.AddSingleton<IAppSettings>((serviceProvider) =>
-            {
-                var appSettings = new AppSettings();
-                Configuration.Bind(appSettings);
-                return appSettings;
-            });
+            services.AddSingleton<IAppSettings>((serviceProvider) => AppSettings);
             services.AddMediatR(Assembly.GetExecutingAssembly());
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
             ConfigureMongoDb(services);
             services.AddTransient<IFileDownloaderService, FileDownloaderService>();
             services.AddTransient<ITimestampService, TimestampService>();
             services.AddTransient<ISamplesService, SamplesService>();
+            services.AddTransient<ISampleFrequencyRangeCheckerService, SampleFrequencyRangeCheckerService>();
+            services.AddTransient<ISampleGroupingService, SampleGroupingService>();
+            services.AddTransient<ISampleSummingService, SampleSummingService>();
             services.AddTransient<IPingService, PingService>();
             services.AddSingleton<BackgroundSamplerService>();
             services.AddSingleton<Ping>();

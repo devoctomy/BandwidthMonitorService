@@ -9,24 +9,30 @@ using System.Threading.Tasks;
 
 namespace BandwidthMonitorService.Messages
 {
-    public class FindSamplesHandler : IRequestHandler<FindSamplesQuery, FindSamplesResponse>
+    public class SumSamplesHandler : IRequestHandler<SumSamplesQuery, SumSamplesResponse>
     {
         private readonly ISamplesService _samplesService;
         private readonly ITimestampService _timestampService;
         private readonly IMapper _mapper;
+        private readonly ISampleGroupingService _sampleGroupingService;
+        private readonly ISampleSummingService _sampleSummingService;
 
-        public FindSamplesHandler(
+        public SumSamplesHandler(
             ISamplesService samplesService,
             ITimestampService timestampService,
-            IMapper mapper)
+            IMapper mapper,
+            ISampleGroupingService sampleGroupingService,
+            ISampleSummingService sampleSummingService)
         {
             _samplesService = samplesService;
             _timestampService = timestampService;
             _mapper = mapper;
+            _sampleGroupingService = sampleGroupingService;
+            _sampleSummingService = sampleSummingService;
         }
 
-        public async Task<FindSamplesResponse> Handle(
-            FindSamplesQuery request,
+        public async Task<SumSamplesResponse> Handle(
+            SumSamplesQuery request,
             CancellationToken cancellationToken)
         {
             await Task.Yield();
@@ -37,11 +43,14 @@ namespace BandwidthMonitorService.Messages
             var samples = _samplesService.Find(x =>
                 x.Timestamp >= timeStampFrom &&
                 x.Timestamp <= timeStampTo)
-                .OrderBy(x => x.Timestamp);
+                .OrderBy(x => x.Timestamp)
+                .ToList();
 
-            var samplesDto = _mapper.Map<List<Dto.Response.Sample>>(samples.ToList());
+            var groupedSamples = _sampleGroupingService.Group(samples, Dto.Enums.Frequency.HourOfDay);
+            var summedSamples = _sampleSummingService.Sum(groupedSamples, Dto.Enums.SummingMode.Average);
+            var samplesDto = _mapper.Map<List<Dto.Response.Sample>>(summedSamples);
 
-            return new FindSamplesResponse()
+            return new SumSamplesResponse()
             {
                 Samples = samplesDto
             };

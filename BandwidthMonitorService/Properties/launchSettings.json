@@ -25,7 +25,8 @@
         "BWM_SecondsDelayBeforeFirstSample": "10",
         "BWM_DownloadBufferSize": "1048576",
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "BWM_MinutesBetweenSamples": "5"
+        "BWM_MinutesBetweenSamples": "5",
+        "BMW_SaveSamples": "false"
       },
       "applicationUrl": "http://0.0.0.0:5000"
     }

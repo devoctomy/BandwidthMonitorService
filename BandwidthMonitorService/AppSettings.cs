@@ -2,6 +2,7 @@
 {
     public class AppSettings : IAppSettings
     {
+        public bool SaveSamples { get; set; }
         public int DownloadBufferSize { get; set; }
         public int MinutesBetweenSamples { get; set; }
         public string DownloadUrlFrankfurt { get; set; }

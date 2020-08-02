@@ -2,8 +2,6 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 namespace BandwidthMonitorService.Controllers
@@ -31,13 +29,13 @@ namespace BandwidthMonitorService.Controllers
             return Ok(result.Samples);
         }
 
-        [HttpGet("Test")]
-        public async Task<ActionResult> Test()
+        [HttpPost("SumSamples")]
+        public async Task<ActionResult> SumSamples([FromBody] Dto.Request.SumSamplesQuery query)
         {
-            var request = new FindSamplesQuery()
+            var request = new SumSamplesQuery()
             {
-                From = DateTime.UtcNow.Subtract(new TimeSpan(6, 0, 0)),
-                To = DateTime.UtcNow
+                From = query.From,
+                To = query.To
             };
             var result = await _mediator.Send(request);
             return Ok(result.Samples);

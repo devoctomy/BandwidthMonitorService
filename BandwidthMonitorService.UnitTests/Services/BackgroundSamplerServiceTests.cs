@@ -22,7 +22,7 @@ namespace BandwidthMonitorService.UnitTests.Services
             var mockSamplesService = new Mock<ISamplesService>();
             var mockMapper = new Mock<IMapper>();
             var mockTimestampService = new Mock<ITimestampService>();
-            var mockPingService = new Mock<PingService>();
+            var mockPingService = new Mock<IPingService>();
 
             var sut = new BackgroundSamplerService(
                 mockAppSettings.Object,
@@ -58,7 +58,7 @@ namespace BandwidthMonitorService.UnitTests.Services
             var mockSamplesService = new Mock<ISamplesService>();
             var mockMapper = new Mock<IMapper>();
             var mockTimestampService = new Mock<ITimestampService>();
-            var mockPingService = new Mock<PingService>();
+            var mockPingService = new Mock<IPingService>();
 
             var sut = new BackgroundSamplerService(
                 mockAppSettings.Object,
@@ -159,6 +159,8 @@ namespace BandwidthMonitorService.UnitTests.Services
                 HttpStatusCode = System.Net.HttpStatusCode.InternalServerError
             };
 
+            mockAppSettings.SetupGet(x => x.SaveSamples).Returns(true);
+
             mockAppSettings.SetupGet(x => x.DownloadUrlLondon)
                 .Returns("http://www.somesite.com/files/bigfile.bin");
 
@@ -253,6 +255,8 @@ namespace BandwidthMonitorService.UnitTests.Services
                 RoundTripTime = pingReply.RoundTripTime,
                 Timestamp = 242424
             };
+
+            mockAppSettings.SetupGet(x => x.SaveSamples).Returns(true);
 
             mockAppSettings.SetupGet(x => x.DownloadUrlLondon)
                 .Returns(downloadUrl);
