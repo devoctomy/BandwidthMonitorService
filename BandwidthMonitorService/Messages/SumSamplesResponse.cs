@@ -2,7 +2,7 @@
 
 namespace BandwidthMonitorService.Messages
 {
-    public class FindSamplesResponse
+    public class SumSamplesResponse
     {
         public List<Dto.Response.Sample> Samples { get; set; }
     }
