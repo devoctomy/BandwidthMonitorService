@@ -76,6 +76,7 @@ namespace BandwidthMonitorService.Services
                 await _asyncDelayService.Delay(
                     new TimeSpan(0, _appSettings.MinutesBetweenSamples, 0),
                     new TimeSpan(0, 0, 5),
+                    null,
                     _cancellationToken);
             }
 

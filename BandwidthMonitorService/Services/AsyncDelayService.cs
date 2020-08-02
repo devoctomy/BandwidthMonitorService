@@ -10,6 +10,7 @@ namespace BandwidthMonitorService.Services
         public async Task Delay(
             TimeSpan delay,
             TimeSpan delayBetweenChecks,
+            Action callback,
             CancellationToken cancellationToken)
         {
             if (!cancellationToken.IsCancellationRequested)
@@ -19,6 +20,7 @@ namespace BandwidthMonitorService.Services
                 while (!cancellationToken.IsCancellationRequested && stopWatch.Elapsed < delay)
                 {
                     Console.WriteLine($"Waiting for {delay}, currently at {stopWatch.Elapsed}");
+                    callback?.Invoke();
                     await Task.Delay(delayBetweenChecks, cancellationToken);
                 }
                 stopWatch.Stop();

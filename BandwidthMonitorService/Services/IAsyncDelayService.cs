@@ -9,6 +9,7 @@ namespace BandwidthMonitorService.Services
         Task Delay(
             TimeSpan delay,
             TimeSpan delayBetweenChecks,
+            Action callback,
             CancellationToken cancellationToken);
     }
 }
