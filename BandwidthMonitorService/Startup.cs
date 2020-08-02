@@ -44,6 +44,7 @@ namespace BandwidthMonitorService
             services.AddTransient<ISampleGroupingService, SampleGroupingService>();
             services.AddTransient<ISampleSummingService, SampleSummingService>();
             services.AddTransient<IPingService, PingService>();
+            services.AddTransient<ISamplerService, SamplerService>();
             services.AddSingleton<BackgroundSamplerService>();
             services.AddSingleton<Ping>();
             services.AddSingleton<IHostedService>(p => p.GetService<BackgroundSamplerService>());

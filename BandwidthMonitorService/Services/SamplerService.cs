@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using BandwidthMonitorService.Domain.Models;
 using BandwidthMonitorService.DomainServices;
+using BandwidthMonitorService.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,7 +36,7 @@ namespace BandwidthMonitorService.Services
             _pingService = pingService;
         }
 
-        public async Task<Dto.Response.Sample> Sample(
+        public async Task<SamplerServiceResult> Sample(
             string sampleUrl,
             CancellationToken cancellationToken)
         {
@@ -67,9 +68,30 @@ namespace BandwidthMonitorService.Services
                         _samplesService.Create(sample);
 
                         var sampleDto = _mapper.Map<Dto.Response.Sample>(sample);
-                        return sampleDto;
+
+                        return new SamplerServiceResult()
+                        {
+                            IsSuccess = true,
+                            Sample = sampleDto
+                        };
+                    }
+                    else
+                    {
+                        return new SamplerServiceResult()
+                        {
+                            IsSuccess = false,
+                            Exception = new DownloadFailedException(sampleUrl)
+                        };
                     }
                 }
+            }
+            else
+            {
+                return new SamplerServiceResult()
+                {
+                    IsSuccess = false,
+                    Exception = new HostPingFailedException(url.Host, pingResult.Status)
+                };
             }
 
             return null;
