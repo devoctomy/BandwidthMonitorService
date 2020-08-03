@@ -32,6 +32,7 @@ namespace BandwidthMonitorService.UnitTests.Services
 
             mockSamplerService.Setup(x => x.Sample(
                 It.IsAny<List<string>>(),
+                It.IsAny<bool>(),
                 It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new List<SamplerServiceResult>()
                 {
@@ -77,7 +78,9 @@ namespace BandwidthMonitorService.UnitTests.Services
                 .Returns(Task.CompletedTask);
 
             // Act
-            await sut.CollectAsync(CancellationToken.None);
+            await sut.CollectAsync(
+                true,
+                CancellationToken.None);
 
             // Assert
             Assert.Equal(4, sut.GetSamples().Count);

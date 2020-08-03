@@ -9,10 +9,12 @@ namespace BandwidthMonitorService.Services
     {
         public Task<List<SamplerServiceResult>> Sample(
             List<string> sampleUrls,
+            bool store,
             CancellationToken cancellationToken);
 
         public Task<SamplerServiceResult> Sample(
             string sampleUrl,
+            bool store,
             CancellationToken cancellationToken);
     }
 }

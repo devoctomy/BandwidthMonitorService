@@ -37,6 +37,7 @@ namespace BandwidthMonitorService.Services
 
         public async Task<SamplerServiceResult> Sample(
             string sampleUrl,
+            bool store,
             CancellationToken cancellationToken)
         {
             var currentSampleTime = DateTime.Now;
@@ -64,7 +65,10 @@ namespace BandwidthMonitorService.Services
                             Elapsed = result.Elapsed,
                             RoundTripTime = pingResult.RoundTripTime
                         };
-                        _samplesService.Create(sample);
+                        if (store)
+                        {
+                            _samplesService.Create(sample);
+                        }
 
                         var sampleDto = _mapper.Map<Dto.Response.Sample>(sample);
 
@@ -96,7 +100,10 @@ namespace BandwidthMonitorService.Services
             }
         }
 
-        public async Task<List<SamplerServiceResult>> Sample(List<string> sampleUrls, CancellationToken cancellationToken)
+        public async Task<List<SamplerServiceResult>> Sample(
+            List<string> sampleUrls,
+            bool store,
+            CancellationToken cancellationToken)
         {
             var results = new List<SamplerServiceResult>();
             foreach (var curUrl in sampleUrls)
@@ -109,6 +116,7 @@ namespace BandwidthMonitorService.Services
                 Console.WriteLine($"Sampling from '{curUrl}'");
                 var result = await Sample(
                     curUrl,
+                    store,
                     cancellationToken);
                 if (result != null)
                 {

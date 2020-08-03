@@ -45,6 +45,7 @@ namespace BandwidthMonitorService.UnitTests.Services
             // Act
             var result = await sut.Sample(
                 url,
+                true,
                 CancellationToken.None);
 
             // Assert
@@ -95,6 +96,7 @@ namespace BandwidthMonitorService.UnitTests.Services
             // Act
             var result = await sut.Sample(
                 url,
+                true,
                 CancellationToken.None);
 
             // Assert
@@ -154,6 +156,7 @@ namespace BandwidthMonitorService.UnitTests.Services
             // Act
             var result = await sut.Sample(
                 url,
+                true,
                 CancellationToken.None);
 
             // Assert
@@ -222,6 +225,7 @@ namespace BandwidthMonitorService.UnitTests.Services
             // Act
             var results = await sut.Sample(
                 urls,
+                true,
                 CancellationToken.None);
 
             // Assert

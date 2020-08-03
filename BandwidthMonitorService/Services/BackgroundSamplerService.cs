@@ -66,17 +66,22 @@ namespace BandwidthMonitorService.Services
 
             while (!_cancellationToken.IsCancellationRequested)
             {
-                await CollectAsync(_cancellationToken);
+                await CollectAsync(
+                    _appSettings.StoreSamples,
+                    _cancellationToken);
             }
 
             _stopped.Set();
             Stopped?.Invoke(this, EventArgs.Empty);
         }
 
-        public async Task CollectAsync(CancellationToken cancellationToken)
+        public async Task CollectAsync(
+            bool store,
+            CancellationToken cancellationToken)
         {
             var results = await _samplerService.Sample(
                 _downloadUrls,
+                store,
                 cancellationToken);
             var successResults = results.Where(x => x.IsSuccess);
             foreach (var curResult in successResults)
