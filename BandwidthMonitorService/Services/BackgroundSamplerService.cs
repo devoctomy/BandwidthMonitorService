@@ -26,24 +26,18 @@ namespace BandwidthMonitorService.Services
         private readonly IAppSettings _appSettings;
         private readonly ISamplerService _samplerService;
         private readonly IAsyncDelayService _asyncDelayService;
-        private readonly List<string> _downloadUrls;
+        private readonly DownloadUrls _downloadUrls;
         private readonly ConcurrentDictionary<string, Dto.Response.Sample> _latestSamples = new ConcurrentDictionary<string, Dto.Response.Sample>();
 
 
         public BackgroundSamplerService(
             IAppSettings appSettings,
             ISamplerService samplerService,
-            IAsyncDelayService asyncDelayService)
+            IAsyncDelayService asyncDelayService,
+            DownloadUrls downloadUrls)
         {
             _appSettings = appSettings;
-            _downloadUrls = new List<string>()
-            {
-                _appSettings.DownloadUrlFrankfurt,
-                _appSettings.DownloadUrlIreland,
-                _appSettings.DownloadUrlLondon,
-                _appSettings.DownloadUrlParis
-            };
-            _downloadUrls = _downloadUrls.Where(x => !string.IsNullOrEmpty(x)).ToList();
+            _downloadUrls = downloadUrls;
             _stopped = new ManualResetEvent(true);
             _cancellationTokenSource = new CancellationTokenSource();
             _cancellationToken = _cancellationTokenSource.Token;
@@ -72,17 +66,22 @@ namespace BandwidthMonitorService.Services
 
             while (!_cancellationToken.IsCancellationRequested)
             {
-                await CollectAsync(_cancellationToken);
+                await CollectAsync(
+                    _appSettings.StoreSamples,
+                    _cancellationToken);
             }
 
             _stopped.Set();
             Stopped?.Invoke(this, EventArgs.Empty);
         }
 
-        public async Task CollectAsync(CancellationToken cancellationToken)
+        public async Task CollectAsync(
+            bool store,
+            CancellationToken cancellationToken)
         {
             var results = await _samplerService.Sample(
                 _downloadUrls,
+                store,
                 cancellationToken);
             var successResults = results.Where(x => x.IsSuccess);
             foreach (var curResult in successResults)
