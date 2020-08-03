@@ -1,0 +1,19 @@
+[Unit]
+Description=Bandwidth Monitor Service
+
+[Service]
+WorkingDirectory=/srv/BandwidthMonitorService
+ExecStart=/srv/BandwidthMonitorService/BandwidthMonitorService
+SyslogIdentifier=BandwidthMonitorService
+
+User=pi
+
+Environment=DOTNET_ROOT=/home/pi/dotnet
+Environment=PATH=$PATH:/home/pi/dotnet
+Environment=BWM_SecondsDelayBeforeFirstSample=10
+Environment=BWM_DownloadBufferSize=1048576
+Environment=BWM_MinutesBetweenSamples=5
+Environment=BMW_SaveSamples=true
+
+[Install]
+WantedBy=multi-user.target

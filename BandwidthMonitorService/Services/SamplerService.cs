@@ -4,7 +4,6 @@ using BandwidthMonitorService.DomainServices;
 using BandwidthMonitorService.Exceptions;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.NetworkInformation;
 using System.Threading;
 using System.Threading.Tasks;
@@ -95,6 +94,34 @@ namespace BandwidthMonitorService.Services
                     Exception = new HostPingFailedException(url.Host, pingResult.Status)
                 };
             }
+        }
+
+        public async Task<List<SamplerServiceResult>> Sample(List<string> sampleUrls, CancellationToken cancellationToken)
+        {
+            var results = new List<SamplerServiceResult>();
+            foreach (var curUrl in sampleUrls)
+            {
+                if (cancellationToken.IsCancellationRequested)
+                {
+                    break;
+                }
+
+                Console.WriteLine($"Sampling from '{curUrl}'");
+                var result = await Sample(
+                    curUrl,
+                    cancellationToken);
+                if (result != null)
+                {
+                    Console.WriteLine($"Sample successful");
+                    results.Add(result);
+                }
+                else
+                {
+                    Console.WriteLine($"Sample failed");
+                }
+            }
+
+            return results;
         }
     }
 }
