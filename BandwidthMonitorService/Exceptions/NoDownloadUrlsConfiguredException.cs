@@ -1,5 +1,8 @@
-﻿namespace BandwidthMonitorService.Exceptions
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace BandwidthMonitorService.Exceptions
 {
+    [ExcludeFromCodeCoverage]
     public class NoDownloadUrlsConfiguredException : BandwidthMonitorServiceException
     {
         public NoDownloadUrlsConfiguredException()

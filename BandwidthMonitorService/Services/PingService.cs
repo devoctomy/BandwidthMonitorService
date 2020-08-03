@@ -1,8 +1,10 @@
-﻿using System.Net.NetworkInformation;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Net.NetworkInformation;
 using System.Threading.Tasks;
 
 namespace BandwidthMonitorService.Services
 {
+    [ExcludeFromCodeCoverage]
     public class PingService : IPingService
     {
         private Ping _ping;
