@@ -13,8 +13,8 @@ Environment=PATH=$PATH:/home/pi/dotnet
 Environment=BWM_SecondsDelayBeforeFirstSample=10
 Environment=BWM_DownloadBufferSize=1048576
 Environment=BWM_MinutesBetweenSamples=5
-Environment=BMW_SaveSamples=true
-Environment=BMW_DownloadSampleUrlsFile=downloadsamples.json
+Environment=BWM_StoreSamples=true
+Environment=BWM_DownloadSampleUrlsFile=downloadsamples.json
 
 [Install]
 WantedBy=multi-user.target
