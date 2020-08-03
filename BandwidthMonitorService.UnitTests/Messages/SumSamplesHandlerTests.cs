@@ -47,7 +47,7 @@ namespace BandwidthMonitorService.UnitTests.Messages
             };
             var foundSamples = samples.AsEnumerable();
             var groupedSamples = new List<IGrouping<int, Sample>>();
-            var samplesDomain = new List<Sample>();
+            var samplesDomain = new List<Dto.Response.SummedSample>();
 
             mockTimestampService.Setup(x => x.ToUnixTimestamp(
                 It.IsAny<DateTime>()))
@@ -64,6 +64,7 @@ namespace BandwidthMonitorService.UnitTests.Messages
 
             mockSampleSummingService.Setup(x => x.Sum(
                 It.IsAny<List<IGrouping<int, Sample>>>(),
+                It.IsAny<Frequency>(),
                 It.IsAny<SummingMode>()))
                 .Returns(samplesDomain);
 
@@ -89,6 +90,7 @@ namespace BandwidthMonitorService.UnitTests.Messages
 
             mockSampleSummingService.Verify(x => x.Sum(
                 It.Is<List<IGrouping<int, Sample>>>(y => y == groupedSamples),
+                It.IsAny<Frequency>(),
                 It.IsAny<SummingMode>()), Times.Once);
 
             mockMapper.Verify(x => x.Map<List<Dto.Response.Sample>>(

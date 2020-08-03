@@ -2,6 +2,7 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -36,8 +37,12 @@ namespace BandwidthMonitorService.Controllers
         {
             var request = new SumSamplesQuery()
             {
-                From = query.From,
-                To = query.To
+                From = DateTime.SpecifyKind(
+                    query.From,
+                    DateTimeKind.Utc),
+                To = DateTime.SpecifyKind(
+                    query.To,
+                    DateTimeKind.Utc)
             };
             var result = await _mediator.Send(request);
             return Ok(result.Samples);

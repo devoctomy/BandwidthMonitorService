@@ -47,7 +47,7 @@ namespace BandwidthMonitorService.Messages
                 .ToList();
 
             var groupedSamples = _sampleGroupingService.Group(samples, Dto.Enums.Frequency.HourOfDay);
-            var summedSamples = _sampleSummingService.Sum(groupedSamples, Dto.Enums.SummingMode.Average);
+            var summedSamples = _sampleSummingService.Sum(groupedSamples, Dto.Enums.Frequency.HourOfDay, Dto.Enums.SummingMode.Average);
             var samplesDto = _mapper.Map<List<Dto.Response.Sample>>(summedSamples);
 
             return new SumSamplesResponse()

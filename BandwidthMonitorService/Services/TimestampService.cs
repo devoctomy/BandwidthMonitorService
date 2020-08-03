@@ -16,7 +16,9 @@ namespace BandwidthMonitorService.Services
 
         public DateTime FromUnixTimestamp(int timestamp)
         {
-            return new DateTime(1970, 1, 1).AddSeconds(timestamp);
+            return DateTime.SpecifyKind(
+                new DateTime(1970, 1, 1).AddSeconds(timestamp),
+                DateTimeKind.Utc);
         }
     }
 }

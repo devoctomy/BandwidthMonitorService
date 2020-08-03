@@ -1,6 +1,5 @@
 ﻿using BandwidthMonitorService.Domain.Models;
 using BandwidthMonitorService.Dto.Enums;
-using Microsoft.AspNetCore.DataProtection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,8 +15,9 @@ namespace BandwidthMonitorService.Services
             _timestampService = timestampService;
         }
 
-        public List<Sample> Sum(
+        public List<Dto.Response.SummedSample> Sum(
             List<IGrouping<int, Sample>> groupedSamples,
+            Frequency freuency,
             SummingMode summingMode)
         {
             if(summingMode != SummingMode.Average)
@@ -25,7 +25,7 @@ namespace BandwidthMonitorService.Services
                 throw new NotImplementedException($"Summing mode '{summingMode}' not currently implemented.");
             }
 
-            var summedSamples = new List<Sample>();
+            var summedSamples = new List<Dto.Response.SummedSample>();
             foreach (var curGroup in groupedSamples)
             {
                 var firstSampleOnTheHourTimestamp = _timestampService.FromUnixTimestamp(curGroup.First().Timestamp);
@@ -35,20 +35,42 @@ namespace BandwidthMonitorService.Services
                     firstSampleOnTheHourTimestamp.Day,
                     firstSampleOnTheHourTimestamp.Hour,
                     0,
-                    0);
-                summedSamples.Add(new Sample()
+                    0,
+                    DateTimeKind.Utc);
+                var timestamp = _timestampService.ToUnixTimestamp(firstSampleOnTheHourTimestamp);
+                summedSamples.Add(new Dto.Response.SummedSample()
                 {
                     Id = Guid.NewGuid().ToString(),
-                    Timestamp = _timestampService.ToUnixTimestamp(firstSampleOnTheHourTimestamp),
+                    Timestamp = timestamp,
                     Url = "Averaged Sample",
                     BytesRead = curGroup.Average(x => x.BytesRead),
                     TotalReads = curGroup.Average(x => x.TotalReads),
                     Elapsed = TimeSpan.FromMilliseconds(curGroup.Average(x => x.Elapsed.TotalMilliseconds)),
-                    RoundTripTime = curGroup.Average(x => x.RoundTripTime)
+                    RoundTripTime = curGroup.Average(x => x.RoundTripTime),
+                    SampleCount = curGroup.Count(),
+                    Frequency = freuency,
+                    FrequencyIndex = GetFrequencyIndex(freuency, timestamp)
                 });
             }
 
-            return summedSamples;
+            return summedSamples.OrderBy(x => x.FrequencyIndex).ToList();
+        }
+
+        private int? GetFrequencyIndex(
+            Frequency frequency,
+            int timestamp)
+        {
+            switch(frequency)
+            {
+                case Frequency.HourOfDay:
+                    {
+                        return _timestampService.FromUnixTimestamp(timestamp).Hour;
+                    }
+                default:
+                    {
+                        return null;
+                    }
+            }
         }
     }
 }
