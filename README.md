@@ -1,3 +1,6 @@
+[![Build Status](https://travis-ci.org/devoctomy/BandwidthMonitorService.svg?branch=master)](https://travis-ci.org/devoctomy/BandwidthMonitorService)
+[![codecov](https://codecov.io/gh/devoctomy/BandwidthMonitorService/branch/master/graph/badge.svg)](https://codecov.io/gh/devoctomy/BandwidthMonitorService)
+
 # BandwidthMonitorService
 
 A .net core service that monitors bandwidth from a set list of file download urls.
