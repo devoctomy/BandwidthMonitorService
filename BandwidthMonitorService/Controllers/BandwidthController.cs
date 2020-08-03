@@ -2,12 +2,14 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace BandwidthMonitorService.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("v1/[controller]")]
     public class BandwidthController : ControllerBase
     {
         private readonly ILogger<BandwidthController> _logger;
@@ -21,7 +23,7 @@ namespace BandwidthMonitorService.Controllers
             _mediator = mediator;
         }
 
-        [HttpGet("LatestRawSamples")]
+        [HttpGet("GetLatestRawSamples")]
         public async Task<ActionResult> GetLatestRawSamples()
         {
             var request = new GetBackgroundSamplerServiceSamplesQuery();
@@ -29,13 +31,18 @@ namespace BandwidthMonitorService.Controllers
             return Ok(result.Samples);
         }
 
-        [HttpPost("SumSamples")]
-        public async Task<ActionResult> SumSamples([FromBody] Dto.Request.SumSamplesQuery query)
+        [HttpPost("GetSummedGraphData")]
+        [ProducesResponseType(typeof(List<Dto.Response.Sample>), 200)]
+        public async Task<IActionResult> GetSummedGraphData([FromQuery] Dto.Request.SumSamplesQuery query)
         {
             var request = new SumSamplesQuery()
             {
-                From = query.From,
-                To = query.To
+                From = DateTime.SpecifyKind(
+                    query.From,
+                    DateTimeKind.Utc),
+                To = DateTime.SpecifyKind(
+                    query.To,
+                    DateTimeKind.Utc)
             };
             var result = await _mediator.Send(request);
             return Ok(result.Samples);

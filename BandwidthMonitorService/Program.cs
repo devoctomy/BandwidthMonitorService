@@ -18,6 +18,7 @@ namespace BandwidthMonitorService
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
+                    webBuilder.UseKestrel();
                 })
                 .ConfigureAppConfiguration(configure =>
                 {

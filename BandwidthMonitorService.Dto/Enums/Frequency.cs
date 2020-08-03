@@ -2,7 +2,7 @@
 {
     public enum Frequency
     {
-        HourOfDay = 1,
+        HourOfDay,
         DayOfMonth,
         WeekOfYear,
         MonthOfYear,

@@ -2,6 +2,6 @@
 {
     public enum SummingMode
     {
-        Average = 0
+        Average
     }
 }

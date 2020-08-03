@@ -118,14 +118,14 @@ namespace BandwidthMonitorService.Services
                     curUrl,
                     store,
                     cancellationToken);
-                if (result != null)
+                if (result != null && result.IsSuccess)
                 {
                     Console.WriteLine($"Sample successful");
                     results.Add(result);
                 }
                 else
                 {
-                    Console.WriteLine($"Sample failed");
+                    Console.WriteLine($"Sample failed. {result.Exception.Message}");
                 }
             }
 

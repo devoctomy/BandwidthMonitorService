@@ -7,8 +7,9 @@ namespace BandwidthMonitorService.Services
 {
     public interface ISampleSummingService
     {
-        public List<Sample> Sum(
-            List<IGrouping<int ,Sample>> groupedSamples,
+        public List<Dto.Response.SummedSample> Sum(
+            List<IGrouping<int , Sample>> groupedSamples,
+            Frequency freuency,
             SummingMode summingMode);
     }
 }

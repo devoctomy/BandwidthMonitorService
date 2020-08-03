@@ -1,5 +1,6 @@
 ﻿using BandwidthMonitorService.Domain.Models;
 using BandwidthMonitorService.Services;
+using Moq;
 using System.Collections.Generic;
 using System.Linq;
 using Xunit;
@@ -101,19 +102,22 @@ namespace BandwidthMonitorService.UnitTests.Services
                     }
                 })
             };
-            var sut = new SampleSummingService();
+            var sut = new SampleSummingService(new TimestampService());
 
             // Act
-            var results = sut.Sum(groupedSamples, Dto.Enums.SummingMode.Average);
+            var results = sut.Sum(
+                groupedSamples,
+                Dto.Enums.Frequency.HourOfDay,
+                Dto.Enums.SummingMode.Average);
 
             // Assert
             Assert.Equal(2, results.Count);
-            Assert.Equal(1, results[0].Timestamp);
+            Assert.Equal(0, results[0].Timestamp);
             Assert.Equal(2424, results[0].BytesRead);
             Assert.Equal(100, results[0].TotalReads);
             Assert.Equal(12, results[0].Elapsed.TotalSeconds);
             Assert.Equal(23.2d, results[0].RoundTripTime);
-            Assert.Equal(6, results[1].Timestamp);
+            Assert.Equal(0, results[1].Timestamp);
             Assert.Equal(3333, results[1].BytesRead);
             Assert.Equal(91.4d, results[1].TotalReads);
             Assert.Equal(3.4d, results[1].Elapsed.TotalSeconds);
