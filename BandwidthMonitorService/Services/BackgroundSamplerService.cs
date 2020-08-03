@@ -68,55 +68,36 @@ namespace BandwidthMonitorService.Services
         private async void Run()
         {
             Started?.Invoke(this, EventArgs.Empty);
+            _stopped.Reset();
 
             while (!_cancellationToken.IsCancellationRequested)
             {
-                await Sample();
-
-                await _asyncDelayService.Delay(
-                    new TimeSpan(0, _appSettings.MinutesBetweenSamples, 0),
-                    new TimeSpan(0, 0, 5),
-                    null,
-                    _cancellationToken);
+                await CollectAsync(_cancellationToken);
             }
 
             _stopped.Set();
             Stopped?.Invoke(this, EventArgs.Empty);
         }
 
-        public async Task Sample()
+        public async Task CollectAsync(CancellationToken cancellationToken)
         {
-            foreach (var curUrl in _downloadUrls)
+            var results = await _samplerService.Sample(
+                _downloadUrls,
+                cancellationToken);
+            var successResults = results.Where(x => x.IsSuccess);
+            foreach (var curResult in successResults)
             {
-                if (_cancellationToken.IsCancellationRequested)
-                {
-                    break;
-                }
-
-                Console.WriteLine($"Sampling from '{curUrl}'");
-                var result = await _samplerService.Sample(
-                    curUrl,
-                    _cancellationToken);
-                if (result != null)
-                {
-                    if (result.IsSuccess)
-                    {
-                        Console.WriteLine($"Sample successful");
-                        _latestSamples.AddOrUpdate(
-                            curUrl,
-                            result.Sample,
-                            (key, oldValue) => result.Sample);
-                    }
-                    else
-                    {
-                        Console.WriteLine($"Sample failed. {result.Exception.Message}");
-                    }
-                }
-                else
-                {
-                    Console.WriteLine($"Sample failed");
-                }
+                _latestSamples.AddOrUpdate(
+                    curResult.Sample.Url,
+                    curResult.Sample,
+                    (key, oldValue) => curResult.Sample);
             }
+
+            await _asyncDelayService.Delay(
+                new TimeSpan(0, _appSettings.MinutesBetweenSamples, 0),
+                new TimeSpan(0, 0, 5),
+                null,
+                cancellationToken);
         }
 
         public List<Dto.Response.Sample> GetSamples()
