@@ -26,9 +26,10 @@
         "BWM_DownloadBufferSize": "1048576",
         "ASPNETCORE_ENVIRONMENT": "Development",
         "BWM_MinutesBetweenSamples": "5",
-        "BMW_SaveSamples": "false"
+        "BWM_SaveSamples": "false",
+        "BWM_DownloadSampleUrlsFile": "downloadsamples.json"
       },
-      "applicationUrl": "http://0.0.0.0:5000"
+      "applicationUrl": "http://127.0.0.1:5000"
     }
   }
 }

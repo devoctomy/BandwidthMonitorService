@@ -17,15 +17,18 @@ namespace BandwidthMonitorService.UnitTests.Services
             var mockAppSettings = new Mock<IAppSettings>();
             var mockSamplerService = new Mock<ISamplerService>();
             var mockAsyncDelayService = new Mock<IAsyncDelayService>();
+            var downloadUrls = new DownloadUrls(new List<string>()
+            {
+                "http://www.london.com/files/file.bin",
+                "http://www.frankfurt.com/files/file.bin",
+                "http://www.ireland.com/files/file.bin",
+                "http://www.paris.com/files/file.bin"
+            });
             var sut = new BackgroundSamplerService(
                 mockAppSettings.Object,
                 mockSamplerService.Object,
-                mockAsyncDelayService.Object);
-
-            mockAppSettings.SetupGet(x => x.DownloadUrlLondon).Returns("http://www.london.com/files/file.bin");
-            mockAppSettings.SetupGet(x => x.DownloadUrlFrankfurt).Returns("http://www.frankfurt.com/files/file.bin");
-            mockAppSettings.SetupGet(x => x.DownloadUrlIreland).Returns("http://www.ireland.com/files/file.bin");
-            mockAppSettings.SetupGet(x => x.DownloadUrlParis).Returns("http://www.paris.com/files/file.bin");
+                mockAsyncDelayService.Object,
+                downloadUrls);
 
             mockSamplerService.Setup(x => x.Sample(
                 It.IsAny<List<string>>(),
@@ -36,7 +39,7 @@ namespace BandwidthMonitorService.UnitTests.Services
                     {
                         Sample = new Dto.Response.Sample()
                         {
-                            Url = mockAppSettings.Object.DownloadUrlLondon
+                            Url = downloadUrls[0]
                         },
                         IsSuccess = true
                     },
@@ -44,7 +47,7 @@ namespace BandwidthMonitorService.UnitTests.Services
                     {
                         Sample = new Dto.Response.Sample()
                         {
-                            Url = mockAppSettings.Object.DownloadUrlFrankfurt
+                            Url = downloadUrls[1]
                         },
                         IsSuccess = true
                     },
@@ -52,7 +55,7 @@ namespace BandwidthMonitorService.UnitTests.Services
                     {
                         Sample = new Dto.Response.Sample()
                         {
-                            Url = mockAppSettings.Object.DownloadUrlIreland
+                            Url = downloadUrls[2]
                         },
                         IsSuccess = true
                     },
@@ -60,7 +63,7 @@ namespace BandwidthMonitorService.UnitTests.Services
                     {
                         Sample = new Dto.Response.Sample()
                         {
-                            Url = mockAppSettings.Object.DownloadUrlParis
+                            Url = downloadUrls[3]
                         },
                         IsSuccess = true
                     }

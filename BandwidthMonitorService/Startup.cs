@@ -9,7 +9,12 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using System.Net.NetworkInformation;
 using System.Reflection;
 
@@ -31,11 +36,24 @@ namespace BandwidthMonitorService
         {
             AppSettings = new AppSettings();
             Configuration.Bind(AppSettings);
+            services.AddSingleton<IAppSettings>((serviceProvider) => AppSettings);
+
+            services.AddSingleton<DownloadUrls>((p) =>
+            {
+                if(File.Exists(AppSettings.DownloadSampleUrlsFile))
+                {
+                    var downloadUrls = JsonConvert.DeserializeObject<List<string>>(File.ReadAllText(AppSettings.DownloadSampleUrlsFile));
+                    return new DownloadUrls(downloadUrls);
+                }
+                else
+                {
+                    return new DownloadUrls();
+                }
+            });
 
             services.AddHttpClient();
             services.AddControllers();
             services.AddSwaggerGen();
-            services.AddSingleton<IAppSettings>((serviceProvider) => AppSettings);
             services.AddMediatR(Assembly.GetExecutingAssembly());
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
             ConfigureMongoDb(services);
