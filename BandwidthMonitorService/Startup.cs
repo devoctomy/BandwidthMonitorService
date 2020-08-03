@@ -10,7 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -32,6 +32,7 @@ namespace BandwidthMonitorService
         public AppSettings AppSettings { get; private set; }
         private BackgroundSamplerService BackgroundSamplerService;
 
+        [Obsolete]
         public void ConfigureServices(IServiceCollection services)
         {
             AppSettings = new AppSettings();
@@ -53,7 +54,22 @@ namespace BandwidthMonitorService
 
             services.AddHttpClient();
             services.AddControllers();
-            services.AddSwaggerGen();
+            services.AddMvc()
+                .SetCompatibilityVersion(Microsoft.AspNetCore.Mvc.CompatibilityVersion.Version_3_0)
+                .AddNewtonsoftJson(options =>
+                {
+                    options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
+                    options.SerializerSettings.ContractResolver = new DefaultContractResolver();
+                });
+            services.AddSwaggerGen(options =>
+            {
+                options.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo()
+                {
+                    Title = "Bandwidth Monitor Service Api",
+                    Version = "v1"
+                });
+                options.DescribeAllEnumsAsStrings();
+            });
             services.AddMediatR(Assembly.GetExecutingAssembly());
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
             ConfigureMongoDb(services);

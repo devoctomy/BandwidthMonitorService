@@ -50,7 +50,7 @@ namespace BandwidthMonitorService.UnitTests.Controllers
         }
 
         [Fact]
-        public async void GivenParams_WhenSumSamples_ThenRequestSent_AndResponseReturned()
+        public async void GivenParams_WhenGetSummedGraphData_ThenRequestSent_AndResponseReturned()
         {
             // Arrange
             var mockLogger = new Mock<ILogger<BandwidthController>>();
@@ -79,7 +79,7 @@ namespace BandwidthMonitorService.UnitTests.Controllers
                 .ReturnsAsync(response);
 
             // Act
-            var result = await sut.SumSamples(query);
+            var result = await sut.GetSummedGraphData(query);
 
             // Assert
             var okObjectResult = result as OkObjectResult;
