@@ -3,7 +3,7 @@ Description=Bandwidth Monitor Service
 
 [Service]
 WorkingDirectory=/srv/BandwidthMonitorService
-ExecStart=/srv/BandwidthMonitorService/BandwidthMonitorService
+ExecStart=/srv/BandwidthMonitorService/BandwidthMonitorService --urls=http://0.0.0.0:5000
 SyslogIdentifier=BandwidthMonitorService
 
 User=pi
