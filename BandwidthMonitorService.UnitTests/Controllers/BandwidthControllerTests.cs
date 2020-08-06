@@ -89,9 +89,9 @@ namespace BandwidthMonitorService.UnitTests.Controllers
             // Assert
             var okObjectResult = result as OkObjectResult;
             Assert.NotNull(okObjectResult);
-            var samplesResult = okObjectResult.Value as List<Dto.Response.Sample>;
-            Assert.NotNull(samplesResult);
-            Assert.Single(samplesResult);
+            var summedGraphData = okObjectResult.Value as SummedGraphData;
+            Assert.NotNull(summedGraphData);
+            Assert.Single(summedGraphData.Samples);
         }
     }
 }

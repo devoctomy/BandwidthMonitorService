@@ -24,6 +24,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionIt
 		README.md = README.md
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BandwidthMonitorService.Portal", "BandwidthMonitorService.Portal\BandwidthMonitorService.Portal.csproj", "{30AFD104-C907-48CF-B2C3-6E3C740956C5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -50,6 +52,10 @@ Global
 		{B35FE528-8296-48EB-A1B9-03126BB883DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B35FE528-8296-48EB-A1B9-03126BB883DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B35FE528-8296-48EB-A1B9-03126BB883DE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{30AFD104-C907-48CF-B2C3-6E3C740956C5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{30AFD104-C907-48CF-B2C3-6E3C740956C5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{30AFD104-C907-48CF-B2C3-6E3C740956C5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{30AFD104-C907-48CF-B2C3-6E3C740956C5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
