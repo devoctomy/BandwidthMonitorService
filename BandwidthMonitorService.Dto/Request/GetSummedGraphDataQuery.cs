@@ -2,7 +2,7 @@
 
 namespace BandwidthMonitorService.Dto.Request
 {
-    public class SumSamplesQuery
+    public class GetSummedGraphDataQuery
     {
         public DateTime From { get; set; }
         public DateTime To { get; set; }

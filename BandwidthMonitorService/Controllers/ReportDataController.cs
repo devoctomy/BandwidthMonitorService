@@ -1,22 +1,21 @@
-﻿using BandwidthMonitorService.Messages;
-using MediatR;
+﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
+using System;
+using BandwidthMonitorService.Messages;
 
 namespace BandwidthMonitorService.Controllers
 {
     [ApiController]
     [Route("v1/[controller]")]
-    public class BandwidthController : ControllerBase
+    public class ReportDataController : ControllerBase
     {
-        private readonly ILogger<BandwidthController> _logger;
+        private readonly ILogger<ReportDataController> _logger;
         private readonly IMediator _mediator;
 
-        public BandwidthController(
-            ILogger<BandwidthController> logger,
+        public ReportDataController(
+            ILogger<ReportDataController> logger,
             IMediator mediator)
         {
             _logger = logger;
@@ -32,8 +31,8 @@ namespace BandwidthMonitorService.Controllers
         }
 
         [HttpPost("GetSummedGraphData")]
-        [ProducesResponseType(typeof(List<Dto.Response.Sample>), 200)]
-        public async Task<IActionResult> GetSummedGraphData([FromQuery] Dto.Request.SumSamplesQuery query)
+        [ProducesResponseType(typeof(Dto.Request.GetSummedGraphDataQuery), 200)]
+        public async Task<IActionResult> GetSummedGraphData([FromQuery] Dto.Request.GetSummedGraphDataQuery query)
         {
             var request = new GetSummedGraphDataQuery()
             {
