@@ -14,10 +14,10 @@ using Xunit;
 
 namespace BandwidthMonitorService.UnitTests.Messages
 {
-    public class SumSamplesHandlerTests
+    public class GetSummedGraphDataHandlerTests
     {
         [Fact]
-        public async void GivenQuery_WhenHandled_ThenFindSamples_AndSamplesGrouped_AndSamplesSummed_AndSamplesMappedToDto_AndDtoSamplesReturned()
+        public async void GivenQuery_WhenHandled_ThenFindSamples_AndSamplesGrouped_AndSamplesSummed_AndSamplesMappedToDto_AndDtoSamplesReturned_AndSummaryCorrect()
         {
             // Arrange
             var mockSamplesService = new Mock<ISamplesService>();
@@ -25,14 +25,14 @@ namespace BandwidthMonitorService.UnitTests.Messages
             var mockMapper = new Mock<IMapper>();
             var mockSampleGroupingService = new Mock<ISampleGroupingService>();
             var mockSampleSummingService = new Mock<ISampleSummingService>();
-            var sut = new SumSamplesHandler(
+            var sut = new GetSummedGraphDataHandler(
                 mockSamplesService.Object,
                 mockTimestampService.Object,
                 mockMapper.Object,
                 mockSampleGroupingService.Object,
                 mockSampleSummingService.Object);
 
-            var request = new SumSamplesQuery()
+            var request = new GetSummedGraphDataQuery()
             {
                 From = new DateTime(2020, 1, 1),
                 To = new DateTime(2020, 1, 1, 23, 59, 59)
@@ -78,6 +78,12 @@ namespace BandwidthMonitorService.UnitTests.Messages
                 CancellationToken.None);
 
             // Assert
+            Assert.Equal(request.From, result.SummedGraphData.Summary.From);
+            Assert.Equal(request.To, result.SummedGraphData.Summary.To);
+            Assert.Equal(1, result.SummedGraphData.Summary.SampleCount);
+            Assert.Equal(Frequency.HourOfDay, result.SummedGraphData.Summary.Frequency);
+            Assert.Equal(SummingMode.Average, result.SummedGraphData.Summary.SummingMode);
+
             mockTimestampService.Verify(x => x.ToUnixTimestamp(
                 It.IsAny<DateTime>()), Times.Exactly(2));
 

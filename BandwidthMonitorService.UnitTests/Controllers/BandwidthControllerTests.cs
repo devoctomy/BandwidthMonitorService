@@ -7,6 +7,7 @@ using Moq;
 using System.Collections.Generic;
 using System.Threading;
 using Xunit;
+using BandwidthMonitorService.Dto.Response;
 
 namespace BandwidthMonitorService.UnitTests.Controllers
 {
@@ -65,16 +66,20 @@ namespace BandwidthMonitorService.UnitTests.Controllers
                 To = new System.DateTime(2020, 1, 1, 23, 59, 59)
             };
 
-            var response = new SumSamplesResponse()
+            var response = new GetSummedGraphDataResponse()
             {
-                Samples = new List<Dto.Response.Sample>()
+                SummedGraphData = new SummedGraphData()
                 {
-                    new Dto.Response.Sample()
+                    Summary = new Summary(),
+                    Samples = new List<Dto.Response.Sample>()
+                    {
+                        new Dto.Response.Sample()
+                    }
                 }
             };
 
             mockMediator.Setup(x => x.Send(
-                It.IsAny<SumSamplesQuery>(),
+                It.IsAny<GetSummedGraphDataQuery>(),
                 It.IsAny<CancellationToken>()))
                 .ReturnsAsync(response);
 

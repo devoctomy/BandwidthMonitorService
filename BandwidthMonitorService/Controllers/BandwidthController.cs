@@ -35,7 +35,7 @@ namespace BandwidthMonitorService.Controllers
         [ProducesResponseType(typeof(List<Dto.Response.Sample>), 200)]
         public async Task<IActionResult> GetSummedGraphData([FromQuery] Dto.Request.SumSamplesQuery query)
         {
-            var request = new SumSamplesQuery()
+            var request = new GetSummedGraphDataQuery()
             {
                 From = DateTime.SpecifyKind(
                     query.From,
@@ -45,7 +45,7 @@ namespace BandwidthMonitorService.Controllers
                     DateTimeKind.Utc)
             };
             var result = await _mediator.Send(request);
-            return Ok(result.Samples);
+            return Ok(result.SummedGraphData);
         }
     }
 }

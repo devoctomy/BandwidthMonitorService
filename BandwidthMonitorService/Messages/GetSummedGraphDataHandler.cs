@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace BandwidthMonitorService.Messages
 {
-    public class SumSamplesHandler : IRequestHandler<SumSamplesQuery, SumSamplesResponse>
+    public class GetSummedGraphDataHandler : IRequestHandler<GetSummedGraphDataQuery, GetSummedGraphDataResponse>
     {
         private readonly ISamplesService _samplesService;
         private readonly ITimestampService _timestampService;
@@ -17,7 +17,7 @@ namespace BandwidthMonitorService.Messages
         private readonly ISampleGroupingService _sampleGroupingService;
         private readonly ISampleSummingService _sampleSummingService;
 
-        public SumSamplesHandler(
+        public GetSummedGraphDataHandler(
             ISamplesService samplesService,
             ITimestampService timestampService,
             IMapper mapper,
@@ -31,8 +31,8 @@ namespace BandwidthMonitorService.Messages
             _sampleSummingService = sampleSummingService;
         }
 
-        public async Task<SumSamplesResponse> Handle(
-            SumSamplesQuery request,
+        public async Task<GetSummedGraphDataResponse> Handle(
+            GetSummedGraphDataQuery request,
             CancellationToken cancellationToken)
         {
             await Task.Yield();
@@ -50,9 +50,20 @@ namespace BandwidthMonitorService.Messages
             var summedSamples = _sampleSummingService.Sum(groupedSamples, Dto.Enums.Frequency.HourOfDay, Dto.Enums.SummingMode.Average);
             var samplesDto = _mapper.Map<List<Dto.Response.Sample>>(summedSamples);
 
-            return new SumSamplesResponse()
+            return new GetSummedGraphDataResponse()
             {
-                Samples = samplesDto
+                SummedGraphData = new Dto.Response.SummedGraphData()
+                {
+                    Summary = new Dto.Response.Summary()
+                    {
+                        From = request.From,
+                        To = request.To,
+                        SampleCount = samples.Count,
+                        Frequency = Dto.Enums.Frequency.HourOfDay,
+                        SummingMode = Dto.Enums.SummingMode.Average
+                    },
+                    Samples = samplesDto
+                }
             };
         }
     }
