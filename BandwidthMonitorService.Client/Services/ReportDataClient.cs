@@ -9,10 +9,9 @@ using System.Threading.Tasks;
 
 namespace BandwidthMonitorService.Client.Services
 {
-    [BandwidthMonitorServiceClient(UniqueName = "ReportDataClient")]
     public class ReportDataClient : IReportDataClient
     {
-        public string UniqueName => typeof(ReportDataClient).GetCustomAttribute<BandwidthMonitorServiceClientAttribute>().UniqueName;
+        public string UniqueName => typeof(IReportDataClient).GetCustomAttribute<BandwidthMonitorServiceClientAttribute>().UniqueName;
 
         private readonly HttpClient _httpClient;
 

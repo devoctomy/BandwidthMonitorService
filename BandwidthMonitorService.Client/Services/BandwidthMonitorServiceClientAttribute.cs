@@ -7,5 +7,6 @@ namespace BandwidthMonitorService.Client.Services
     public class BandwidthMonitorServiceClientAttribute : Attribute
     {
         public string UniqueName { get; set; }
+        public Type Implementation { get; set; }
     }
 }

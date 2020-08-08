@@ -4,7 +4,10 @@ using System.Threading.Tasks;
 
 namespace BandwidthMonitorService.Client.Services
 {
-    interface IReportDataClient
+    [BandwidthMonitorServiceClient(
+        UniqueName = "ReportDataClient",
+        Implementation = typeof(ReportDataClient))]
+    public interface IReportDataClient
     {
         Task<Response<SummedGraphData>> GetSummedGraphDataAsync(
             Dto.Request.GetSummedGraphDataQuery query,

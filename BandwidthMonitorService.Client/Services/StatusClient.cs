@@ -7,11 +7,10 @@ using System.Threading;
 using System.Threading.Tasks;
 
 namespace BandwidthMonitorService.Client.Services
-{
-    [BandwidthMonitorServiceClient(UniqueName = "StatusClient")]
+{   
     public class StatusClient : IStatusClient
     {
-        public string UniqueName => typeof(StatusClient).GetCustomAttribute<BandwidthMonitorServiceClientAttribute>().UniqueName;
+        public string UniqueName => typeof(IStatusClient).GetCustomAttribute<BandwidthMonitorServiceClientAttribute>().UniqueName;
 
         private readonly HttpClient _httpClient;
 

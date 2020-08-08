@@ -14,8 +14,6 @@ namespace BandwidthMonitorService.Client.Extensions
         {
             var assembly = typeof(ServiceCollectionExtensions).Assembly;
             var clientTypes = assembly.GetTypes().Where(x => 
-                typeof(IReportDataClient).IsAssignableFrom(x) &&
-                x.BaseType != null &&
                 x.GetCustomAttribute<BandwidthMonitorServiceClientAttribute>() != null)
                 .ToList();
             foreach (var curClientType in clientTypes)
@@ -28,7 +26,7 @@ namespace BandwidthMonitorService.Client.Extensions
                     c.DefaultRequestHeaders.Add("User-Agent", "BandwidthMonitorService.Client");
                 });
 
-                services.AddSingleton(curClientType);
+                services.AddSingleton(curClientType, clientAttribute.Implementation);
             }
         }
     }
