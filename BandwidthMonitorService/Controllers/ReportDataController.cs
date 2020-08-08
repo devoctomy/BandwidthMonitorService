@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
 using System;
 using BandwidthMonitorService.Messages;
+using System.Threading;
 
 namespace BandwidthMonitorService.Controllers
 {
@@ -25,8 +26,9 @@ namespace BandwidthMonitorService.Controllers
         [HttpGet("GetLatestRawSamples")]
         public async Task<ActionResult> GetLatestRawSamples()
         {
-            var request = new GetBackgroundSamplerServiceSamplesQuery();
-            var result = await _mediator.Send(request);
+            var result = await _mediator.Send(
+                new GetBackgroundSamplerServiceSamplesQuery(),
+                CancellationToken.None);
             return Ok(result.Samples);
         }
 
@@ -43,7 +45,9 @@ namespace BandwidthMonitorService.Controllers
                     query.To,
                     DateTimeKind.Utc)
             };
-            var result = await _mediator.Send(request);
+            var result = await _mediator.Send(
+                request,
+                CancellationToken.None);
             return Ok(result.SummedGraphData);
         }
     }
