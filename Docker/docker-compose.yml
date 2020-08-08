@@ -1,0 +1,24 @@
+version: '3.4'
+
+services:
+  bandwidthmonitorservice:
+    image: ${DOCKER_REGISTRY-}bandwidthmonitorservice
+    environment:
+      - BWM_StoreSamples=true
+    build:
+      context: ../
+      dockerfile: BandwidthMonitorService/Dockerfile
+    networks:
+      - default
+
+  bandwidthmonitorservice.portal:
+    image: ${DOCKER_REGISTRY-}bandwidthmonitorservice.portal
+    build:
+      context: ../
+      dockerfile: BandwidthMonitorService.Portal/Dockerfile
+    networks:
+      - default
+
+networks:
+  default:
+    driver: bridge

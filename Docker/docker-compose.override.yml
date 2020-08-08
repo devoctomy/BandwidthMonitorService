@@ -1,0 +1,16 @@
+version: '3.4'
+
+services:
+  bandwidthmonitorservice:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://0.0.0.0:5000
+    ports:
+      - "5000:5000"
+
+  bandwidthmonitorservice.portal:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://0.0.0.0:8080
+    ports:
+      - "8080:8080"

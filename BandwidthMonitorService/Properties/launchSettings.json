@@ -23,13 +23,19 @@
       "launchUrl": "swagger",
       "environmentVariables": {
         "BWM_SecondsDelayBeforeFirstSample": "10",
+        "BWM_DownloadSampleUrlsFile": "downloadsamples.json",
         "BWM_DownloadBufferSize": "1048576",
-        "ASPNETCORE_ENVIRONMENT": "Development",
-        "BWM_MinutesBetweenSamples": "5",
         "BWM_StoreSamples": "false",
-        "BWM_DownloadSampleUrlsFile": "downloadsamples.json"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "BWM_MinutesBetweenSamples": "5"
       },
       "applicationUrl": "http://127.0.0.1:5000"
+    },
+    "Docker": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "launchUrl": "http://127.0.0.1:5000/swagger",
+      "publishAllPorts": true
     }
   }
 }
