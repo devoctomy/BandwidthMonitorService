@@ -17,6 +17,7 @@ namespace BandwidthMonitorService.UnitTests.Services
             var mockAppSettings = new Mock<IAppSettings>();
             var mockSamplerService = new Mock<ISamplerService>();
             var mockAsyncDelayService = new Mock<IAsyncDelayService>();
+            var mockStatsService = new Mock<IServiceStats>();
             var downloadUrls = new DownloadUrls(new List<string>()
             {
                 "http://www.london.com/files/file.bin",
@@ -28,7 +29,8 @@ namespace BandwidthMonitorService.UnitTests.Services
                 mockAppSettings.Object,
                 mockSamplerService.Object,
                 mockAsyncDelayService.Object,
-                downloadUrls);
+                downloadUrls,
+                mockStatsService.Object);
 
             mockSamplerService.Setup(x => x.Sample(
                 It.IsAny<List<string>>(),
@@ -77,6 +79,9 @@ namespace BandwidthMonitorService.UnitTests.Services
                 It.IsAny<CancellationToken>()))
                 .Returns(Task.CompletedTask);
 
+            mockStatsService.Setup(x => x.RegisterSample(
+                It.IsAny<long>()));
+
             // Act
             await sut.CollectAsync(
                 true,
@@ -89,6 +94,8 @@ namespace BandwidthMonitorService.UnitTests.Services
                 It.IsAny<TimeSpan>(),
                 It.IsAny<Action>(),
                 It.IsAny<CancellationToken>()), Times.Once);
+            mockStatsService.Verify(x => x.RegisterSample(
+                It.IsAny<long>()), Times.Exactly(4));
         }
     }
 }

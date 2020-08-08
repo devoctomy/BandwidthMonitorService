@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using BandwidthMonitorService.Services;
+using MediatR;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Threading;
@@ -8,11 +9,15 @@ namespace BandwidthMonitorService.Messages
 {
     public class GetServiceStatusHandler : IRequestHandler<GetServiceStatusQuery, GetServiceStatusResponse>
     {
-        private ILogger<GetServiceStatusHandler> _logger;
+        private readonly ILogger<GetServiceStatusHandler> _logger;
+        private readonly IServiceStats _serviceStats;
 
-        public GetServiceStatusHandler(ILogger<GetServiceStatusHandler> logger)
+        public GetServiceStatusHandler(
+            ILogger<GetServiceStatusHandler> logger,
+            IServiceStats serviceStats)
         {
             _logger = logger;
+            _serviceStats = serviceStats;
         }
 
         public async Task<GetServiceStatusResponse> Handle(
@@ -25,7 +30,11 @@ namespace BandwidthMonitorService.Messages
             {
                 ServiceStatus = new Dto.Response.ServiceStatus()
                 {
-                    Uptime = new TimeSpan(1, 0, 0)
+                    Uptime = DateTime.UtcNow.Subtract(_serviceStats.StartedAt),
+                    StartedAt = _serviceStats.StartedAt,
+                    StatsLastReset = _serviceStats.StatsLastReset,
+                    TotalBytesDownloaded = _serviceStats.TotalBytesDownloaded,
+                    TotalSamplesTaken = _serviceStats.TotalSamplesTaken
                 }
             };
         }

@@ -83,6 +83,7 @@ namespace BandwidthMonitorService
             services.AddTransient<IPingService, PingService>();
             services.AddTransient<ISamplerService, SamplerService>();
             services.AddTransient<IAsyncDelayService, AsyncDelayService>();
+            services.AddSingleton<IServiceStats, ServiceStats>();
             services.AddSingleton<BackgroundSamplerService>();
             services.AddSingleton<Ping>();
             services.AddSingleton<IHostedService>(p => p.GetService<BackgroundSamplerService>());

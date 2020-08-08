@@ -28,13 +28,14 @@ namespace BandwidthMonitorService.Services
         private readonly IAsyncDelayService _asyncDelayService;
         private readonly DownloadUrls _downloadUrls;
         private readonly ConcurrentDictionary<string, Dto.Response.Sample> _latestSamples = new ConcurrentDictionary<string, Dto.Response.Sample>();
-
+        private readonly IServiceStats _serviceStats;
 
         public BackgroundSamplerService(
             IAppSettings appSettings,
             ISamplerService samplerService,
             IAsyncDelayService asyncDelayService,
-            DownloadUrls downloadUrls)
+            DownloadUrls downloadUrls,
+            IServiceStats serviceStats)
         {
             _appSettings = appSettings;
             _downloadUrls = downloadUrls;
@@ -43,6 +44,7 @@ namespace BandwidthMonitorService.Services
             _cancellationToken = _cancellationTokenSource.Token;
             _samplerService = samplerService;
             _asyncDelayService = asyncDelayService;
+            _serviceStats = serviceStats;
         }
 
         public async Task StartAsync(CancellationToken cancellationToken)
@@ -86,6 +88,7 @@ namespace BandwidthMonitorService.Services
             var successResults = results.Where(x => x.IsSuccess);
             foreach (var curResult in successResults)
             {
+                _serviceStats.RegisterSample((long)curResult.Sample.BytesRead); // !!!
                 _latestSamples.AddOrUpdate(
                     curResult.Sample.Url,
                     curResult.Sample,
