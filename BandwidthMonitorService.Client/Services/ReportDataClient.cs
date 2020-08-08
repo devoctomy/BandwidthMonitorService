@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using System;
 using System.Net.Http;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace BandwidthMonitorService.Client.Services
@@ -20,14 +21,17 @@ namespace BandwidthMonitorService.Client.Services
             _httpClient = httpClientFactory.CreateClient(UniqueName);
         }
 
-        public async Task<Response<SummedGraphData>> GetSummedGraphDataAsync(GetSummedGraphDataQuery query)
+        public async Task<Response<SummedGraphData>> GetSummedGraphDataAsync(
+            GetSummedGraphDataQuery query,
+            CancellationToken cancellationToken)
         {
             using (var response = await _httpClient.PostAsync(
                 new Uri("v1/ReportData/GetSummedGraphData", UriKind.Relative),
                 new StringContent(
                     JsonConvert.SerializeObject(query),
                     System.Text.Encoding.UTF8,
-                    "application/json")))
+                    "application/json"),
+                cancellationToken))
             {
                 if(response.IsSuccessStatusCode)
                 {

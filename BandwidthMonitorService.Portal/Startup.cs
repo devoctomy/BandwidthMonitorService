@@ -19,18 +19,20 @@ namespace BandwidthMonitorService.Portal
         }
 
         public IConfiguration Configuration { get; }
+        public AppSettings AppSettings { get; private set; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            AppSettings = new AppSettings();
+            Configuration.Bind(AppSettings);
+            services.AddSingleton<IAppSettings>((serviceProvider) => AppSettings);
             services.AddControllersWithViews();
             services.AddBandwidthMonitorClients(new Client.BandwidthMonitorClientSettings()
             {
-                BaseUrl = "http://localhost:5000"
+                BaseUrl = AppSettings.BandwidthMonitorServiceBaseUrl
             });
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
@@ -42,11 +44,8 @@ namespace BandwidthMonitorService.Portal
                 app.UseExceptionHandler("/Home/Error");
             }
             app.UseStaticFiles();
-
             app.UseRouting();
-
             app.UseAuthorization();
-
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(

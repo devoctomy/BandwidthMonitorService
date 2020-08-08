@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 
 namespace BandwidthMonitorService.Portal
@@ -15,6 +16,11 @@ namespace BandwidthMonitorService.Portal
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
+                    webBuilder.UseKestrel();
+                })
+                .ConfigureAppConfiguration(configure =>
+                {
+                    configure.AddEnvironmentVariables("BWMP_");
                 });
     }
 }

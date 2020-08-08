@@ -13,6 +13,8 @@ services:
 
   bandwidthmonitorservice.portal:
     image: ${DOCKER_REGISTRY-}bandwidthmonitorservice.portal
+    environment:
+      - BWMP_BandwidthMonitorServiceBaseUrl=http://localhost:5000
     build:
       context: ../
       dockerfile: BandwidthMonitorService.Portal/Dockerfile

@@ -5,6 +5,7 @@ using Moq;
 using Newtonsoft.Json;
 using System;
 using System.Net.Http;
+using System.Threading;
 using Xunit;
 
 namespace BandwidthMonitorService.Client.UnitTests.Services
@@ -59,7 +60,9 @@ namespace BandwidthMonitorService.Client.UnitTests.Services
             var sut = new ReportDataClient(mockHttpClientFactory.Object);
 
             // Act
-            var response = await sut.GetSummedGraphDataAsync(query);
+            var response = await sut.GetSummedGraphDataAsync(
+                query,
+                CancellationToken.None);
 
             // Assert
             Assert.Equal(System.Net.HttpStatusCode.OK, response.HttpStatusCode);
@@ -113,7 +116,9 @@ namespace BandwidthMonitorService.Client.UnitTests.Services
             var sut = new ReportDataClient(mockHttpClientFactory.Object);
 
             // Act
-            var response = await sut.GetSummedGraphDataAsync(query);
+            var response = await sut.GetSummedGraphDataAsync(
+                query,
+                CancellationToken.None);
 
             // Assert
             Assert.Equal(System.Net.HttpStatusCode.InternalServerError, response.HttpStatusCode);
