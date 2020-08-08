@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BandwidthMonitorService.Dto.Response;
+using System;
 
 namespace BandwidthMonitorService.Services
 {
@@ -11,6 +12,6 @@ namespace BandwidthMonitorService.Services
 
         void Reset();
 
-        void RegisterSample(long totalBytes);
+        void RegisterSample(Sample sample);
     }
 }

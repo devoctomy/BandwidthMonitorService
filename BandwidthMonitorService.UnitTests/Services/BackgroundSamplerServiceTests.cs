@@ -80,7 +80,7 @@ namespace BandwidthMonitorService.UnitTests.Services
                 .Returns(Task.CompletedTask);
 
             mockStatsService.Setup(x => x.RegisterSample(
-                It.IsAny<long>()));
+                It.IsAny<Dto.Response.Sample>()));
 
             // Act
             await sut.CollectAsync(
@@ -95,7 +95,7 @@ namespace BandwidthMonitorService.UnitTests.Services
                 It.IsAny<Action>(),
                 It.IsAny<CancellationToken>()), Times.Once);
             mockStatsService.Verify(x => x.RegisterSample(
-                It.IsAny<long>()), Times.Exactly(4));
+                It.IsAny<Dto.Response.Sample>()), Times.Exactly(4));
         }
     }
 }

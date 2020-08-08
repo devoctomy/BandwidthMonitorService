@@ -88,7 +88,7 @@ namespace BandwidthMonitorService.Services
             var successResults = results.Where(x => x.IsSuccess);
             foreach (var curResult in successResults)
             {
-                _serviceStats.RegisterSample((long)curResult.Sample.BytesRead); // !!!
+                _serviceStats.RegisterSample(curResult.Sample);
                 _latestSamples.AddOrUpdate(
                     curResult.Sample.Url,
                     curResult.Sample,

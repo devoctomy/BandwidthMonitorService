@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BandwidthMonitorService.Dto.Response;
+using System;
 using System.Threading;
 
 namespace BandwidthMonitorService.Services
@@ -20,10 +21,10 @@ namespace BandwidthMonitorService.Services
             StatsLastReset = DateTime.Now;
         }
 
-        public void RegisterSample(long totalBytes)
+        public void RegisterSample(Sample sample)
         {
             Interlocked.Add(ref _totalSamplesTaken, 1);
-            Interlocked.Add(ref _totalBytesDownloaded, totalBytes);
+            Interlocked.Add(ref _totalBytesDownloaded, (long)sample.BytesRead); // !!!
         }
     }
 }
