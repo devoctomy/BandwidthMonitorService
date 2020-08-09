@@ -21,7 +21,7 @@ namespace BandwidthMonitorService.Client.Services
         public async Task<Response<ServiceStatus>> GetServiceStatusAsync(CancellationToken cancellationToken)
         {
             using (var response = await _httpClient.GetAsync(
-                new Uri("v1/Status/ServiceStatus", UriKind.Relative),
+                new Uri("/v1/Status/Service", UriKind.Relative),
                 cancellationToken))
             {
                 if (response.IsSuccessStatusCode)

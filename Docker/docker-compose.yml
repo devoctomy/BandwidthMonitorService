@@ -3,24 +3,28 @@ version: '3.4'
 services:
   bandwidthmonitorservice:
     image: ${DOCKER_REGISTRY-}bandwidthmonitorservice
+    container_name: api
     environment:
       - BWM_StoreSamples=true
     build:
       context: ../
       dockerfile: BandwidthMonitorService/Dockerfile
     networks:
-      - default
+      - my-network
 
   bandwidthmonitorservice.portal:
     image: ${DOCKER_REGISTRY-}bandwidthmonitorservice.portal
+    container_name: portal
     environment:
-      - BWMP_BandwidthMonitorServiceBaseUrl=http://localhost:5000
+      - BWMP_BandwidthMonitorServiceBaseUrl=http://api:5000
     build:
       context: ../
       dockerfile: BandwidthMonitorService.Portal/Dockerfile
     networks:
-      - default
+      - my-network
 
 networks:
   default:
     driver: bridge
+  my-network:
+    external: true

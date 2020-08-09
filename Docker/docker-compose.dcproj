@@ -5,7 +5,7 @@
     <DockerTargetOS>Linux</DockerTargetOS>
     <ProjectGuid>f5abaaa2-fea6-44a8-8130-33a4c87d1bcd</ProjectGuid>
     <DockerLaunchAction>LaunchBrowser</DockerLaunchAction>
-    <DockerServiceUrl>http://localhost:5000</DockerServiceUrl>
+    <DockerServiceUrl>http://localhost:8080</DockerServiceUrl>
     <DockerServiceName>bandwidthmonitorservice</DockerServiceName>
   </PropertyGroup>
   <ItemGroup>
