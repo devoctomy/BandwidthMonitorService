@@ -3,14 +3,18 @@ version: '3.4'
 services:
   bandwidthmonitorservice:
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=http://0.0.0.0:5000
+      - ASPNETCORE_ENVIRONMENT=Development      
+      - BWM_StoreSamples=true
+      - BWM_DownloadSampleUrlsFile=/opt/bandwidthmonitorservice/api/config/downloadsamples.json
+    volumes:
+      - type: bind
+        source: c:/temp/
+        target: /opt/bandwidthmonitorservice/api/config
     ports:
       - "5000:5000"
 
   bandwidthmonitorservice.portal:
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=http://0.0.0.0:8080
+      - ASPNETCORE_ENVIRONMENT=Development  
     ports:
       - "8080:8080"

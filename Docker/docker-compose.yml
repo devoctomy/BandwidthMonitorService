@@ -5,22 +5,19 @@ services:
     image: ${DOCKER_REGISTRY-}bandwidthmonitorservice
     container_name: api
     environment:
-      - BWM_StoreSamples=true
-      - BWM_DownloadSampleUrlsFile=/opt/bandwidthmonitorservice/api/config/downloadsamples.json
+      - ASPNETCORE_URLS=http://0.0.0.0:5000
+      - BWM_DownloadBufferSize=1048576
     build:
       context: ../
       dockerfile: BandwidthMonitorService/Dockerfile
-    volumes:
-      - type: bind
-        source: c:/temp/
-        target: /opt/bandwidthmonitorservice/api/config
     networks:
       - my-network
 
   bandwidthmonitorservice.portal:
     image: ${DOCKER_REGISTRY-}bandwidthmonitorservice.portal
-    container_name: portal
+    container_name: porta
     environment:
+      - ASPNETCORE_URLS=http://0.0.0.0:8080
       - BWMP_BandwidthMonitorServiceBaseUrl=http://api:5000
     build:
       context: ../
