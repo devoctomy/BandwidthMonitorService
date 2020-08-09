@@ -1,8 +1,8 @@
 ﻿using BandwidthMonitorService.Dto.Response;
 
-namespace BandwidthMonitorService.Portal.Models
+namespace BandwidthMonitorService.Portal.Messages
 {
-    public class StatusModel
+    public class GetServiceStatusResponse
     {
         public bool IsOnline { get; set; }
         public ServiceStatus ServiceStatus { get; set; }

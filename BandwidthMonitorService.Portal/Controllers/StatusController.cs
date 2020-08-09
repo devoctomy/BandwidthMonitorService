@@ -1,28 +1,30 @@
 ﻿using System;
+using System.Threading.Tasks;
 using BandwidthMonitorService.Client.Services;
 using BandwidthMonitorService.Dto.Response;
+using BandwidthMonitorService.Portal.Messages;
 using BandwidthMonitorService.Portal.Models;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BandwidthMonitorService.Portal.Controllers
 {
     public class StatusController : Controller
     {
-        private readonly IStatusClient _statusClient;
+        private readonly IMediator _mediator;
 
-        public StatusController(IStatusClient statusClient)
+        public StatusController(IMediator mediator)
         {
-            _statusClient = statusClient;
+            _mediator = mediator;
         }
 
-        public IActionResult Index()
+        public async Task<ActionResult> Index()
         {
+            var response = await _mediator.Send(new GetServiceStatusQuery());
             var model = new StatusModel()
             {
-                ServiceStatus = new ServiceStatus()
-                {
-                    Uptime = new TimeSpan(1, 1, 1)
-                }
+                IsOnline = response.IsOnline,
+                ServiceStatus = response.ServiceStatus
             };
             return View(model);
         }

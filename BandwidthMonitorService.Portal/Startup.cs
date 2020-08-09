@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using BandwidthMonitorService.Client.Extensions;
+using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -26,6 +28,7 @@ namespace BandwidthMonitorService.Portal
             AppSettings = new AppSettings();
             Configuration.Bind(AppSettings);
             services.AddSingleton<IAppSettings>((serviceProvider) => AppSettings);
+            services.AddMediatR(Assembly.GetExecutingAssembly());
             services.AddControllersWithViews();
             services.AddBandwidthMonitorClients(new Client.BandwidthMonitorClientSettings()
             {
