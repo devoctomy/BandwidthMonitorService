@@ -5,6 +5,7 @@ using BandwidthMonitorService.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Net.NetworkInformation;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -100,10 +101,10 @@ namespace BandwidthMonitorService.Services
             }
         }
 
-        public async Task<List<SamplerServiceResult>> Sample(
+        public async IAsyncEnumerable<SamplerServiceResult> Sample(
             List<string> sampleUrls,
             bool store,
-            CancellationToken cancellationToken)
+            [EnumeratorCancellation] CancellationToken cancellationToken)
         {
             var results = new List<SamplerServiceResult>();
             foreach (var curUrl in sampleUrls)
@@ -118,18 +119,9 @@ namespace BandwidthMonitorService.Services
                     curUrl,
                     store,
                     cancellationToken);
-                if (result != null && result.IsSuccess)
-                {
-                    Console.WriteLine($"Sample successful");
-                    results.Add(result);
-                }
-                else
-                {
-                    Console.WriteLine($"Sample failed. {result.Exception.Message}");
-                }
-            }
 
-            return results;
+                yield return result;
+            }
         }
     }
 }

@@ -81,18 +81,25 @@ namespace BandwidthMonitorService.Services
             bool store,
             CancellationToken cancellationToken)
         {
-            var results = await _samplerService.Sample(
+            var results = _samplerService.Sample(
                 _downloadUrls,
                 store,
                 cancellationToken);
-            var successResults = results.Where(x => x.IsSuccess);
-            foreach (var curResult in successResults)
+            await foreach(var curResult in results)
             {
-                _serviceStats.RegisterSample(curResult.Sample);
-                _latestSamples.AddOrUpdate(
-                    curResult.Sample.Url,
-                    curResult.Sample,
-                    (key, oldValue) => curResult.Sample);
+                if (curResult != null && curResult.IsSuccess)
+                {
+                    Console.WriteLine($"Sample successful");
+                    _serviceStats.RegisterSample(curResult.Sample);
+                    _latestSamples.AddOrUpdate(
+                        curResult.Sample.Url,
+                        curResult.Sample,
+                        (key, oldValue) => curResult.Sample);
+                }
+                else
+                {
+                    Console.WriteLine($"Sample failed. {curResult.Exception.Message}");
+                }
             }
 
             await _asyncDelayService.Delay(

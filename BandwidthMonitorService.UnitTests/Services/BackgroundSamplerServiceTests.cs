@@ -2,6 +2,7 @@
 using Moq;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -36,7 +37,7 @@ namespace BandwidthMonitorService.UnitTests.Services
                 It.IsAny<List<string>>(),
                 It.IsAny<bool>(),
                 It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new List<SamplerServiceResult>()
+                .Returns(new List<SamplerServiceResult>()
                 {
                     new SamplerServiceResult()
                     {
@@ -70,7 +71,7 @@ namespace BandwidthMonitorService.UnitTests.Services
                         },
                         IsSuccess = true
                     }
-                });
+                }.ToAsyncEnumerable());
 
             mockAsyncDelayService.Setup(x => x.Delay(
                 It.IsAny<TimeSpan>(),

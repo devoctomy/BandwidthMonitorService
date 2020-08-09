@@ -6,7 +6,7 @@ using BandwidthMonitorService.Services;
 using Moq;
 using System;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
+using System.Linq;
 using System.Threading;
 using Xunit;
 
@@ -226,7 +226,7 @@ namespace BandwidthMonitorService.UnitTests.Services
             var results = await sut.Sample(
                 urls,
                 true,
-                CancellationToken.None);
+                CancellationToken.None).ToListAsync();
 
             // Assert
             Assert.Equal(4, results.Count);
@@ -294,7 +294,7 @@ namespace BandwidthMonitorService.UnitTests.Services
             var results = await sut.Sample(
                 urls,
                 false,
-                CancellationToken.None);
+                CancellationToken.None).ToListAsync();
 
             // Assert
             Assert.Equal(4, results.Count);
