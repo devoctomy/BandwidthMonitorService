@@ -1,15 +1,26 @@
 version: '3.4'
 
 services:
+  mongodb:
+    image: mongo:bionic
+    container_name: mongo
+    ports:
+      - "27017:27017"
+    networks:
+      - my-network
+
   bandwidthmonitorservice:
     image: ${DOCKER_REGISTRY-}bandwidthmonitorservice
     container_name: api
     environment:
       - ASPNETCORE_URLS=http://0.0.0.0:5000
+      - BWM_MongoDbConnectionString=mongodb://mongo:27017
       - BWM_DownloadBufferSize=1048576
     build:
       context: ../
       dockerfile: BandwidthMonitorService/Dockerfile
+    ports:
+      - "5000:5000"
     networks:
       - my-network
 
@@ -22,6 +33,8 @@ services:
     build:
       context: ../
       dockerfile: BandwidthMonitorService.Portal/Dockerfile
+    ports:
+      - "8080:8080"
     networks:
       - my-network
 

@@ -10,6 +10,8 @@ services:
     build:
       context: ../
       dockerfile: BandwidthMonitorService/Dockerfile_arm64
+    ports:
+      - "5000:5000"
     networks:
       - my-network
 
@@ -22,6 +24,8 @@ services:
     build:
       context: ../
       dockerfile: BandwidthMonitorService.Portal/Dockerfile_arm64
+    ports:
+      - "8080:8080"
     networks:
       - my-network
 

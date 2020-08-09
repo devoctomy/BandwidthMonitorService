@@ -117,9 +117,13 @@ namespace BandwidthMonitorService
 
         private void ConfigureMongoDb(IServiceCollection services)
         {
-            services.Configure<SamplesDatabaseSettings>(Configuration.GetSection(nameof(SamplesDatabaseSettings)));
-            services.AddSingleton<ISamplesDatabaseSettings>(sp => sp.GetRequiredService<IOptions<SamplesDatabaseSettings>>().Value);
-            services.AddSingleton<SamplesService>();
+            services.AddSingleton<ISamplesDatabaseSettings>(new SamplesDatabaseSettings()
+            {
+                ConnectionString = AppSettings.MongoDbConnectionString,
+                CollectionName = "Samples",
+                DatabaseName = "SamplesDb"
+            });
+            services.AddSingleton<ISamplesService, SamplesService>();
         }
     }
 }
