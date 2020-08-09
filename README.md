@@ -26,3 +26,12 @@ sudo docker network create -d bridge my-network
 cd Docker
 sudo docker-compose -f docker-compose_arm64.yml -f docker-compose_arm64.override.yml up -d
 ```
+
+## Testing
+
+Once launched with docker compose, assuming everything has started up correctly you should be able to navigate
+to the portal URL in the browser, e.g.
+
+```
+http://<host ip address>:8080/Status
+```
