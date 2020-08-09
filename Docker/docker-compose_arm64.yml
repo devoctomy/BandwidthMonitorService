@@ -1,0 +1,30 @@
+version: '3.4'
+
+services:
+  bandwidthmonitorservice:
+    image: ${DOCKER_REGISTRY-}bandwidthmonitorservice
+    container_name: api
+    environment:
+      - ASPNETCORE_URLS=http://0.0.0.0:5000
+      - BWM_DownloadBufferSize=1048576
+    build:
+      context: ../
+      dockerfile: BandwidthMonitorService/Dockerfile_arm64
+    networks:
+      - my-network
+
+  bandwidthmonitorservice.portal:
+    image: ${DOCKER_REGISTRY-}bandwidthmonitorservice.portal
+    container_name: porta
+    environment:
+      - ASPNETCORE_URLS=http://0.0.0.0:8080
+      - BWMP_BandwidthMonitorServiceBaseUrl=http://api:5000
+    build:
+      context: ../
+      dockerfile: BandwidthMonitorService.Portal/Dockerfile_arm64
+    networks:
+      - my-network
+
+networks:
+  my-network:
+    external: true
