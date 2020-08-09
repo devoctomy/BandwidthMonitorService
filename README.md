@@ -52,5 +52,5 @@ Starting from within the source folder, run the following,
 ```
 sudo docker network create -d bridge my-network
 cd Docker
-sudo docker-compose -f docker-compose_arm64.yml up
+sudo docker-compose -f docker-compose_arm64.yml -f docker-compose_arm64.override.yml up
 ```
