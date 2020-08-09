@@ -10,11 +10,7 @@ services:
       - type: bind
         source: /temp/
         target: /opt/bandwidthmonitorservice/api/config
-    ports:
-      - "5000:5000"
 
   bandwidthmonitorservice.portal:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development  
-    ports:
-      - "8080:8080"
