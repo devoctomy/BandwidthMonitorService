@@ -34,3 +34,13 @@ Please refer to the following article,
 https://swimburger.net/blog/dotnet/how-to-run-a-dotnet-core-console-app-as-a-service-using-systemd-on-linux
 
 **You will find an example service unit configuration file with the source code.**
+
+## Running via Docker Compose
+
+Firstly you will have to create the network via the command line
+
+```
+docker network create -d bridge my-network
+```
+
+Then you should be able to launch the docker-compose project within Visual Studio.

@@ -6,9 +6,14 @@ services:
     container_name: api
     environment:
       - BWM_StoreSamples=true
+      - BWM_DownloadSampleUrlsFile=/opt/bandwidthmonitorservice/api/config/downloadsamples.json
     build:
       context: ../
       dockerfile: BandwidthMonitorService/Dockerfile
+    volumes:
+      - type: bind
+        source: c:/temp/
+        target: /opt/bandwidthmonitorservice/api/config
     networks:
       - my-network
 
@@ -24,7 +29,5 @@ services:
       - my-network
 
 networks:
-  default:
-    driver: bridge
   my-network:
     external: true
