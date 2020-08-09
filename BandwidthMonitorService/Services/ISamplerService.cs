@@ -7,7 +7,7 @@ namespace BandwidthMonitorService.Services
 {
     public interface ISamplerService
     {
-        public Task<List<SamplerServiceResult>> Sample(
+        public IAsyncEnumerable<SamplerServiceResult> Sample(
             List<string> sampleUrls,
             bool store,
             CancellationToken cancellationToken);

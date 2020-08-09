@@ -3,7 +3,7 @@ using System;
 
 namespace BandwidthMonitorService.Messages
 {
-    public class SumSamplesQuery : IRequest<SumSamplesResponse>
+    public class GetSummedGraphDataQuery : IRequest<GetSummedGraphDataResponse>
     {
         public DateTime? From { get; set; }
         public DateTime? To { get; set; }

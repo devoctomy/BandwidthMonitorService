@@ -1,0 +1,26 @@
+﻿@model BandwidthMonitorService.Portal.Models.StatusModel
+
+@if (Model.IsOnline)
+{
+    <h1><span class="badge badge-success">Online</span></h1>
+    <br />
+    <span class="badge badge-secondary">@Html.LabelFor(x => x.ServiceStatus.Uptime)</span>
+    @Html.DisplayTextFor(x => x.ServiceStatus.Uptime)
+    <br />
+    <span class="badge badge-secondary">@Html.LabelFor(x => x.ServiceStatus.StartedAt)</span>
+    @Html.DisplayTextFor(x => x.ServiceStatus.StartedAt)
+    <br />
+    <span class="badge badge-secondary">@Html.LabelFor(x => x.ServiceStatus.StatsLastReset)</span>
+    @Html.DisplayTextFor(x => x.ServiceStatus.StatsLastReset)
+    <br />
+    <span class="badge badge-secondary">@Html.LabelFor(x => x.ServiceStatus.TotalSamplesTaken)</span>
+    @Html.DisplayTextFor(x => x.ServiceStatus.TotalSamplesTaken)
+    <br />
+    <span class="badge badge-secondary">@Html.LabelFor(x => x.ServiceStatus.TotalBytesDownloaded)</span>
+    @Html.DisplayTextFor(x => x.ServiceStatus.TotalBytesDownloaded)
+}
+else
+{
+    <h1><span class="badge badge-danger">Offline</span></h1>
+}
+

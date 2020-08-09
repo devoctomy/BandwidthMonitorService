@@ -2,6 +2,7 @@
 using Moq;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -17,6 +18,7 @@ namespace BandwidthMonitorService.UnitTests.Services
             var mockAppSettings = new Mock<IAppSettings>();
             var mockSamplerService = new Mock<ISamplerService>();
             var mockAsyncDelayService = new Mock<IAsyncDelayService>();
+            var mockStatsService = new Mock<IServiceStats>();
             var downloadUrls = new DownloadUrls(new List<string>()
             {
                 "http://www.london.com/files/file.bin",
@@ -28,13 +30,14 @@ namespace BandwidthMonitorService.UnitTests.Services
                 mockAppSettings.Object,
                 mockSamplerService.Object,
                 mockAsyncDelayService.Object,
-                downloadUrls);
+                downloadUrls,
+                mockStatsService.Object);
 
             mockSamplerService.Setup(x => x.Sample(
                 It.IsAny<List<string>>(),
                 It.IsAny<bool>(),
                 It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new List<SamplerServiceResult>()
+                .Returns(new List<SamplerServiceResult>()
                 {
                     new SamplerServiceResult()
                     {
@@ -68,7 +71,7 @@ namespace BandwidthMonitorService.UnitTests.Services
                         },
                         IsSuccess = true
                     }
-                });
+                }.ToAsyncEnumerable());
 
             mockAsyncDelayService.Setup(x => x.Delay(
                 It.IsAny<TimeSpan>(),
@@ -76,6 +79,9 @@ namespace BandwidthMonitorService.UnitTests.Services
                 It.IsAny<Action>(),
                 It.IsAny<CancellationToken>()))
                 .Returns(Task.CompletedTask);
+
+            mockStatsService.Setup(x => x.RegisterSample(
+                It.IsAny<Dto.Response.Sample>()));
 
             // Act
             await sut.CollectAsync(
@@ -89,6 +95,8 @@ namespace BandwidthMonitorService.UnitTests.Services
                 It.IsAny<TimeSpan>(),
                 It.IsAny<Action>(),
                 It.IsAny<CancellationToken>()), Times.Once);
+            mockStatsService.Verify(x => x.RegisterSample(
+                It.IsAny<Dto.Response.Sample>()), Times.Exactly(4));
         }
     }
 }
