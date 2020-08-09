@@ -48,7 +48,7 @@ namespace BandwidthMonitorService
                 }
                 else
                 {
-                    return new DownloadUrls();
+                    throw new InvalidOperationException("No download urls file has been found.  Service cannot start.");
                 }
             });
 
