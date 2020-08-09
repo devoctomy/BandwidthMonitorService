@@ -48,7 +48,7 @@ namespace BandwidthMonitorService
                 }
                 else
                 {
-                    throw new InvalidOperationException("No download urls file has been found.  Service cannot start.");
+                    throw new InvalidOperationException($"The download sample urls file '{AppSettings.DownloadSampleUrlsFile}' was not found found.");
                 }
             });
 
