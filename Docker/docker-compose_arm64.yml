@@ -16,6 +16,8 @@ services:
       - ASPNETCORE_URLS=http://0.0.0.0:5000
       - BWM_MongoDbConnectionString=mongodb://mongo:27017
       - BWM_DownloadBufferSize=1048576
+      - BWM_SecondsDelayBeforeFirstSample=10
+      - BWM_MinutesBetweenSamples=5
     build:
       context: ../
       dockerfile: BandwidthMonitorService/Dockerfile_arm64
