@@ -6,6 +6,9 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development      
       - BWM_StoreSamples=true
       - BWM_DownloadSampleUrlsFile=/opt/bandwidthmonitorservice/api/config/downloadsamples.json
+      - BWM_SecondsDelayBeforeFirstSample=10
+      - BWM_DownloadBufferSize=1048576
+      - BWM_MinutesBetweenSamples=5
     volumes:
       - type: bind
         source: /home/pi/Documents/config
